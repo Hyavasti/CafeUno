@@ -1,0 +1,1585 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cafe Uno | Enterprise Admin, POS & Inventory</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cafe: {
+                            50: '#fdfbf7',
+                            100: '#f7f1e3',
+                            200: '#eedcc7',
+                            800: '#3d2c1e',
+                            900: '#261b12',
+                            accent: '#d4a373',
+                            darkaccent: '#bc6c25'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        h1, h2, h3, .font-serif { font-family: 'Playfair Display', serif; }
+    </style>
+</head>
+<body class="bg-cafe-50 text-cafe-800 antialiased flex h-screen overflow-hidden">
+
+    <!-- Sidebar Navigation -->
+    <aside class="w-64 bg-cafe-900 text-white flex flex-col justify-between hidden md:flex border-r border-cafe-800">
+        <div>
+            <!-- Brand -->
+            <div class="h-20 flex items-center px-6 gap-3 border-b border-cafe-800">
+                <div class="w-9 h-9 rounded-full bg-cafe-accent flex items-center justify-center text-cafe-900 font-bold text-sm shadow">
+                    <i class="fa-solid fa-mug-hot"></i>
+                </div>
+                <div>
+                    <span class="text-lg font-bold font-serif tracking-wider">Cafe Uno</span>
+                    <span class="block text-[9px] uppercase tracking-widest text-cafe-accent font-medium">Enterprise Admin</span>
+                </div>
+            </div>
+
+            <!-- Nav Links -->
+            <nav class="p-4 space-y-1.5 text-sm font-medium">
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-cafe-accent text-cafe-900 font-semibold transition-all">
+                    <i class="fa-solid fa-chart-pie w-5"></i> Dashboard
+                </button>
+                <button onclick="switchTab('pos')" id="nav-pos" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-cafe-200 hover:bg-cafe-800 hover:text-white transition-all">
+                    <i class="fa-solid fa-cash-register w-5"></i> POS Terminal
+                </button>
+                <button onclick="switchTab('tracker')" id="nav-tracker" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-cafe-200 hover:bg-cafe-800 hover:text-white transition-all">
+                    <i class="fa-solid fa-bell-concierge w-5"></i> Kitchen Order Tracker
+                </button>
+                <button onclick="switchTab('reservations')" id="nav-reservations" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-cafe-200 hover:bg-cafe-800 hover:text-white transition-all">
+                    <i class="fa-solid fa-calendar-days w-5"></i> Reservations & Walk-ins
+                </button>
+                <button onclick="switchTab('history')" id="nav-history" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-cafe-200 hover:bg-cafe-800 hover:text-white transition-all">
+                    <i class="fa-solid fa-clock-rotate-left w-5"></i> Order History
+                </button>
+                <button onclick="switchTab('menu')" id="nav-menu" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-cafe-200 hover:bg-cafe-800 hover:text-white transition-all">
+                    <i class="fa-solid fa-utensils w-5"></i> Menu Manager
+                </button>
+                <button onclick="switchTab('inventory')" id="nav-inventory" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-cafe-200 hover:bg-cafe-800 hover:text-white transition-all">
+                    <i class="fa-solid fa-boxes-stacked w-5"></i> Inventory & Supplies
+                </button>
+            </nav>
+        </div>
+
+        <!-- Admin Profile -->
+        <div class="p-4 border-t border-cafe-800">
+            <div class="flex items-center gap-3 px-4 py-2 bg-cafe-800/60 rounded-xl">
+                <div class="w-8 h-8 rounded-full bg-cafe-darkaccent flex items-center justify-center text-white font-bold text-xs">
+                    AD
+                </div>
+                <div class="overflow-hidden">
+                    <p class="text-xs font-semibold text-white truncate">Store Manager</p>
+                    <p class="text-[10px] text-cafe-accent truncate">Zapote Branch</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col h-screen overflow-y-auto relative">
+        
+        <!-- Consistent Top Header -->
+        <header class="h-20 bg-white border-b border-cafe-200 px-6 sm:px-8 flex items-center justify-between sticky top-0 z-30 shadow-sm shrink-0">
+            <div class="flex items-center gap-4 min-w-0">
+                <button class="md:hidden text-cafe-900 text-xl focus:outline-none">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <h1 id="page-title" class="text-lg sm:text-2xl font-serif font-bold text-cafe-900 truncate">Dashboard Overview</h1>
+            </div>
+            
+            <div class="flex items-center gap-3 shrink-0">
+                <div class="flex items-center gap-2 bg-cafe-50 border border-cafe-200 px-3 py-1.5 rounded-full">
+                    <span id="store-status-text" class="text-xs font-semibold text-emerald-700">Zapote Store Open</span>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="store-status-toggle" checked onchange="toggleStoreStatus(this)" class="sr-only peer">
+                        <div class="w-9 h-5 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
+                    </label>
+                </div>
+
+                <a href="index.html" target="_blank" class="hidden sm:inline-flex items-center gap-2 text-xs font-semibold bg-cafe-100 hover:bg-cafe-200 text-cafe-900 px-4 py-2 rounded-xl transition-all">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> View Live Site
+                </a>
+            </div>
+        </header>
+
+        <!-- STRICT OFFLINE LOCK OVERLAY -->
+        <div id="store-offline-lock" class="absolute inset-x-0 bottom-0 top-20 z-40 bg-cafe-900/40 backdrop-blur-[2px] hidden flex items-center justify-center p-6 text-center">
+            <div class="bg-white rounded-3xl max-w-md w-full p-8 border border-cafe-200 shadow-2xl space-y-4 pointer-events-auto">
+                <div class="w-16 h-16 mx-auto rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-2xl">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <h3 class="font-serif font-bold text-2xl text-cafe-900">Store is Currently Offline</h3>
+                <p class="text-xs text-cafe-800/70 leading-relaxed">
+                    The POS terminal, ordering, inventory updates, and bookings are completely locked because the store status is set to offline. Switch the store status back online to resume operations.
+                </p>
+                <button onclick="turnStoreOnline()" class="w-full bg-cafe-accent hover:bg-cafe-darkaccent text-cafe-900 font-bold py-3 rounded-xl text-xs transition-all shadow">
+                    Switch Store Online
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Dynamic Content Wrapper -->
+        <main class="p-6 sm:p-8 max-w-7xl mx-auto w-full space-y-8">
+
+            <!-- TAB 1: DASHBOARD OVERVIEW -->
+            <div id="tab-dashboard" class="space-y-8">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-white p-6 rounded-3xl border border-cafe-200 shadow-sm">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-700 flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-receipt"></i>
+                            </div>
+                            <span class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg">Active Now</span>
+                        </div>
+                        <h3 class="text-2xl font-bold font-serif text-cafe-900">₱15,210</h3>
+                        <p class="text-xs text-cafe-800/60 font-medium">Estimated Daily Revenue</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl border border-cafe-200 shadow-sm">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-700 flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </div>
+                            <span class="text-xs font-semibold text-rose-600 bg-rose-50 px-2 py-1 rounded-lg">Action Needed</span>
+                        </div>
+                        <h3 class="text-2xl font-bold font-serif text-cafe-900">2 Items</h3>
+                        <p class="text-xs text-cafe-800/60 font-medium">Low Stock Supply Alerts</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl border border-cafe-200 shadow-sm">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-700 flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-calendar-check"></i>
+                            </div>
+                            <span class="text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded-lg">Bookings</span>
+                        </div>
+                        <h3 class="text-2xl font-bold font-serif text-cafe-900">4 Tables</h3>
+                        <p class="text-xs text-cafe-800/60 font-medium">Upcoming & Walk-ins</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl border border-cafe-200 shadow-sm">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="w-12 h-12 rounded-2xl bg-purple-50 text-purple-700 flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-utensils"></i>
+                            </div>
+                            <span class="text-xs font-semibold text-purple-600 bg-purple-50 px-2 py-1 rounded-lg">Catalog</span>
+                        </div>
+                        <h3 class="text-2xl font-bold font-serif text-cafe-900">6 Items</h3>
+                        <p class="text-xs text-cafe-800/60 font-medium">Active Menu Products</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-cafe-900 text-white rounded-3xl p-8 shadow-md flex flex-col justify-between">
+                        <div>
+                            <span class="text-[10px] uppercase tracking-widest bg-cafe-800 text-cafe-accent px-2.5 py-1 rounded-md font-semibold">Point of Sale</span>
+                            <h2 class="font-serif font-bold text-xl mt-3 mb-2">Create new transaction</h2>
+                            <p class="text-xs text-cafe-200/80 font-light mb-6">Process auto-merging item quantities, customizable add-on amounts, and smart pool-locked numbers.</p>
+                        </div>
+                        <button onclick="switchTab('pos')" class="w-full bg-cafe-accent hover:bg-cafe-darkaccent text-cafe-900 font-bold py-3 rounded-xl text-xs transition-all shadow">
+                            Open POS Terminal
+                        </button>
+                    </div>
+                    <div class="bg-white border border-cafe-200 rounded-3xl p-8 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <span class="text-[10px] uppercase tracking-widest bg-rose-50 text-rose-700 px-2.5 py-1 rounded-md font-semibold">Inventory Alert</span>
+                            <h2 class="font-serif font-bold text-xl text-cafe-900 mt-3 mb-2">Monitor Stock & Supplies</h2>
+                            <p class="text-xs text-cafe-800/70 font-light mb-6">Manage food ingredients, tissues, cleaning oil, and takeout boxes with low-stock category filters.</p>
+                        </div>
+                        <button onclick="switchTab('inventory')" class="w-full bg-cafe-900 hover:bg-cafe-800 text-white font-bold py-3 rounded-xl text-xs transition-all shadow">
+                            Check Inventory Stocks
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: POS TERMINAL -->
+            <div id="tab-pos" class="space-y-8 hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <!-- Left: Catalog & Addons -->
+                    <div class="lg:col-span-7 bg-white rounded-3xl p-6 border border-cafe-200 shadow-sm space-y-6">
+                        <div>
+                            <span class="text-[10px] uppercase font-bold tracking-widest text-cafe-darkaccent bg-cafe-100 px-2.5 py-1 rounded-md">Catalog</span>
+                            <h2 class="font-serif font-bold text-xl text-cafe-900 mt-2">POS Product Catalog</h2>
+                            <p class="text-xs text-cafe-800/70">Select category, choose item, customize add-on counts, and add to slip.</p>
+                        </div>
+
+                        <!-- Category Filters -->
+                        <div class="flex flex-wrap gap-2 pb-2 border-b border-cafe-100" id="pos-cat-filters">
+                            <button onclick="filterPosCategory('all')" class="pos-cat-btn px-4 py-2 rounded-xl text-xs font-semibold bg-cafe-900 text-white transition-all shadow-sm" data-cat="all">All Items</button>
+                            <button onclick="filterPosCategory('coffee')" class="pos-cat-btn px-4 py-2 rounded-xl text-xs font-semibold bg-cafe-100 text-cafe-900 hover:bg-cafe-900 hover:text-white transition-all" data-cat="coffee">☕ Coffee</button>
+                            <button onclick="filterPosCategory('milktea')" class="pos-cat-btn px-4 py-2 rounded-xl text-xs font-semibold bg-cafe-100 text-cafe-900 hover:bg-cafe-900 hover:text-white transition-all" data-cat="milktea">🧋 Milktea</button>
+                            <button onclick="filterPosCategory('diner')" class="pos-cat-btn px-4 py-2 rounded-xl text-xs font-semibold bg-cafe-100 text-cafe-900 hover:bg-cafe-900 hover:text-white transition-all" data-cat="diner">🍔 Diner & Meals</button>
+                        </div>
+
+                        <!-- Products Grid -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[300px] overflow-y-auto pr-1" id="pos-product-grid">
+                            <div class="pos-card bg-cafe-50/70 border border-cafe-200 rounded-2xl p-4 flex flex-col justify-between hover:border-cafe-accent transition-all cursor-pointer" data-category="coffee" onclick="selectProduct('Signature Spanish Latte', 140, 'coffee')">
+                                <div>
+                                    <div class="flex justify-between items-start mb-1">
+                                        <h4 class="font-serif font-bold text-sm text-cafe-900">Spanish Latte</h4>
+                                        <span class="text-cafe-darkaccent font-bold text-xs">₱140</span>
+                                    </div>
+                                    <p class="text-[11px] text-cafe-800/70">Rich espresso & fresh milk</p>
+                                </div>
+                                <span class="mt-3 text-[10px] bg-cafe-200 text-cafe-900 font-medium px-2 py-0.5 rounded w-max">Select</span>
+                            </div>
+                            <div class="pos-card bg-cafe-50/70 border border-cafe-200 rounded-2xl p-4 flex flex-col justify-between hover:border-cafe-accent transition-all cursor-pointer" data-category="milktea" onclick="selectProduct('Okinawa Roasted Milktea', 120, 'milktea')">
+                                <div>
+                                    <div class="flex justify-between items-start mb-1">
+                                        <h4 class="font-serif font-bold text-sm text-cafe-900">Okinawa Milktea</h4>
+                                        <span class="text-cafe-darkaccent font-bold text-xs">₱120</span>
+                                    </div>
+                                    <p class="text-[11px] text-cafe-800/70">Roasted brown sugar flavor</p>
+                                </div>
+                                <span class="mt-3 text-[10px] bg-cafe-200 text-cafe-900 font-medium px-2 py-0.5 rounded w-max">Select</span>
+                            </div>
+                            <div class="pos-card bg-cafe-50/70 border border-cafe-200 rounded-2xl p-4 flex flex-col justify-between hover:border-cafe-accent transition-all cursor-pointer" data-category="diner" onclick="selectProduct('Uno Classic Cheeseburger', 180, 'diner')">
+                                <div>
+                                    <div class="flex justify-between items-start mb-1">
+                                        <h4 class="font-serif font-bold text-sm text-cafe-900">Classic Cheeseburger</h4>
+                                        <span class="text-cafe-darkaccent font-bold text-xs">₱180</span>
+                                    </div>
+                                    <p class="text-[11px] text-cafe-800/70">Juicy beef patty & cheddar</p>
+                                </div>
+                                <span class="mt-3 text-[10px] bg-cafe-200 text-cafe-900 font-medium px-2 py-0.5 rounded w-max">Select</span>
+                            </div>
+                            <div class="pos-card bg-cafe-50/70 border border-cafe-200 rounded-2xl p-4 flex flex-col justify-between hover:border-cafe-accent transition-all cursor-pointer" data-category="coffee" onclick="selectProduct('Caramel Macchiato', 150, 'coffee')">
+                                <div>
+                                    <div class="flex justify-between items-start mb-1">
+                                        <h4 class="font-serif font-bold text-sm text-cafe-900">Caramel Macchiato</h4>
+                                        <span class="text-cafe-darkaccent font-bold text-xs">₱150</span>
+                                    </div>
+                                    <p class="text-[11px] text-cafe-800/70">Vanilla & caramel drizzle</p>
+                                </div>
+                                <span class="mt-3 text-[10px] bg-cafe-200 text-cafe-900 font-medium px-2 py-0.5 rounded w-max">Select</span>
+                            </div>
+                            <div class="pos-card bg-cafe-50/70 border border-cafe-200 rounded-2xl p-4 flex flex-col justify-between hover:border-cafe-accent transition-all cursor-pointer" data-category="milktea" onclick="selectProduct('Hokkaido Pearl Milktea', 120, 'milktea')">
+                                <div>
+                                    <div class="flex justify-between items-start mb-1">
+                                        <h4 class="font-serif font-bold text-sm text-cafe-900">Hokkaido Milktea</h4>
+                                        <span class="text-cafe-darkaccent font-bold text-xs">₱120</span>
+                                    </div>
+                                    <p class="text-[11px] text-cafe-800/70">Creamy caramel notes</p>
+                                </div>
+                                <span class="mt-3 text-[10px] bg-cafe-200 text-cafe-900 font-medium px-2 py-0.5 rounded w-max">Select</span>
+                            </div>
+                            <div class="pos-card bg-cafe-50/70 border border-cafe-200 rounded-2xl p-4 flex flex-col justify-between hover:border-cafe-accent transition-all cursor-pointer" data-category="diner" onclick="selectProduct('Buffalo Chicken Wings (6pcs)', 210, 'diner')">
+                                <div>
+                                    <div class="flex justify-between items-start mb-1">
+                                        <h4 class="font-serif font-bold text-sm text-cafe-900">Buffalo Wings (6pcs)</h4>
+                                        <span class="text-cafe-darkaccent font-bold text-xs">₱210</span>
+                                    </div>
+                                    <p class="text-[11px] text-cafe-800/70">Tangy & spicy glaze</p>
+                                </div>
+                                <span class="mt-3 text-[10px] bg-cafe-200 text-cafe-900 font-medium px-2 py-0.5 rounded w-max">Select</span>
+                            </div>
+                        </div>
+
+                        <!-- Addons box with quantity counts -->
+                        <div class="bg-cafe-100/60 border border-cafe-200 rounded-2xl p-4 space-y-3">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <span class="text-[10px] font-bold text-cafe-darkaccent uppercase">Selected Item</span>
+                                    <h4 id="selected-product-name" class="font-serif font-bold text-sm text-cafe-900">Click a product above</h4>
+                                </div>
+                                <span id="selected-product-price" class="font-bold text-sm text-cafe-darkaccent">₱0</span>
+                            </div>
+                            <div id="addons-container" class="space-y-2 pt-2 border-t border-cafe-200">
+                                <p class="text-[11px] text-cafe-800/60 italic">Select a product to view available add-ons.</p>
+                            </div>
+                            <div class="flex gap-3 pt-2">
+                                <div class="flex items-center bg-white border border-cafe-200 rounded-xl px-2">
+                                    <span class="text-[10px] font-bold uppercase text-cafe-800 mr-2">Qty:</span>
+                                    <input type="number" id="pos-qty" min="1" value="1" class="w-12 py-2 text-xs text-center font-medium focus:outline-none">
+                                </div>
+                                <button type="button" onclick="addItemToCart()" class="flex-1 bg-cafe-900 hover:bg-cafe-800 text-white font-semibold py-2.5 rounded-xl text-xs transition-all shadow-sm">
+                                    + Add Item to Order Slip
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Slip, Buzzer, Letter Card & Payment -->
+                    <div class="lg:col-span-5 bg-white rounded-3xl p-6 border border-cafe-200 shadow-sm flex flex-col justify-between space-y-4">
+                        <div class="space-y-3">
+                            <div>
+                                <span class="text-[10px] uppercase font-bold tracking-widest text-cafe-darkaccent bg-cafe-100 px-2.5 py-1 rounded-md">Checkout</span>
+                                <h2 class="font-serif font-bold text-xl text-cafe-900 mt-2">Order Slip & Numbering</h2>
+                                <p class="text-xs text-cafe-800/70">Review items, assign active tables, and lock numbers.</p>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-semibold uppercase tracking-wider text-cafe-800 mb-1">Table / Option</label>
+                                    <select id="pos-table" class="w-full bg-cafe-50 border border-cafe-200 rounded-xl px-3 py-2 text-xs focus:outline-none font-medium">
+                                        <!-- Dynamically updated table pool -->
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold uppercase tracking-wider text-cafe-800 mb-1">Drink Buzzer #</label>
+                                    <select id="pos-buzzer" class="w-full bg-cafe-50 border border-cafe-200 rounded-xl px-3 py-2 text-xs focus:outline-none font-medium">
+                                        <!-- Dynamically updated buzzer pool -->
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-cafe-800 mb-1">Food Letter Card (Waiter Delivery)</label>
+                                <select id="pos-lettercard" class="w-full bg-cafe-50 border border-cafe-200 rounded-xl px-3 py-2 text-xs focus:outline-none font-medium text-cafe-darkaccent font-bold">
+                                    <!-- Dynamically updated letter card pool -->
+                                </select>
+                            </div>
+
+                            <!-- Expanded Scrollable Order Cart -->
+                            <div class="border border-cafe-200 rounded-2xl p-3 bg-cafe-50/50 space-y-2">
+                                <h4 class="text-xs font-bold uppercase tracking-wider text-cafe-900 flex justify-between items-center">
+                                    <span>Order Items (<span id="cart-item-count">0</span>)</span>
+                                    <button onclick="clearCart()" class="text-[10px] text-rose-600 hover:underline">Clear All</button>
+                                </h4>
+                                <div id="pos-cart-list" class="space-y-2 max-h-44 overflow-y-auto text-xs pr-1">
+                                    <p class="text-cafe-800/50 italic text-center py-6">No items added yet.</p>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-cafe-800 mb-1">Payment Method</label>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <label class="flex flex-col items-center justify-center p-2 bg-cafe-50 border border-cafe-200 rounded-xl cursor-pointer hover:border-cafe-accent text-center">
+                                        <input type="radio" name="payment_method" value="Cash" checked class="accent-cafe-darkaccent mb-1">
+                                        <span class="text-xs font-semibold text-cafe-900">Cash</span>
+                                    </label>
+                                    <label class="flex flex-col items-center justify-center p-2 bg-cafe-50 border border-cafe-200 rounded-xl cursor-pointer hover:border-cafe-accent text-center">
+                                        <input type="radio" name="payment_method" value="GCash" class="accent-cafe-darkaccent mb-1">
+                                        <span class="text-xs font-semibold text-cafe-900">GCash</span>
+                                    </label>
+                                    <label class="flex flex-col items-center justify-center p-2 bg-cafe-50 border border-cafe-200 rounded-xl cursor-pointer hover:border-cafe-accent text-center">
+                                        <input type="radio" name="payment_method" value="Maya" class="accent-cafe-darkaccent mb-1">
+                                        <span class="text-xs font-semibold text-cafe-900">Maya</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3 pt-3 border-t border-cafe-200">
+                            <div class="flex justify-between items-center text-sm font-bold text-cafe-900">
+                                <span>Total Amount Due:</span>
+                                <span id="pos-grand-total" class="text-lg text-cafe-darkaccent">₱0</span>
+                            </div>
+                            <button type="button" onclick="submitPOSOrder()" class="w-full bg-cafe-accent hover:bg-cafe-darkaccent text-cafe-900 font-bold py-3.5 rounded-xl text-xs transition-all shadow-md">
+                                Complete Order & Send to Tracker
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: KITCHEN ORDER TRACKER -->
+            <div id="tab-tracker" class="space-y-6 hidden">
+                <div class="bg-white rounded-3xl p-6 border border-cafe-200 shadow-sm space-y-6">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="text-[10px] uppercase font-bold tracking-widest text-cafe-darkaccent bg-cafe-100 px-2.5 py-1 rounded-md">Live Queue</span>
+                            <h2 class="font-serif font-bold text-xl text-cafe-900 mt-2">Kitchen Order Tracker & Dual Checklists</h2>
+                            <p class="text-xs text-cafe-800/70">Monitor active orders. All items must be marked done before closing a table.</p>
+                        </div>
+                        <span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Real-Time Sync</span>
+                    </div>
+
+                    <!-- Active Orders Container -->
+                    <div id="active-orders-container" class="space-y-6">
+                        <div class="border border-cafe-200 rounded-2xl p-5 bg-cafe-50/50 space-y-4">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 pb-3 border-b border-cafe-200">
+                                <div>
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <h3 class="font-serif font-bold text-lg text-cafe-900">Table 2 (Al Fresco)</h3>
+                                        <span class="bg-indigo-100 text-indigo-800 text-[10px] font-bold px-2.5 py-0.5 rounded-md">Food Tag: Card A</span>
+                                        <span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded-md">Drink Tag: Buzzer #3</span>
+                                        <span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-md">Paid via GCash</span>
+                                    </div>
+                                    <p class="text-[11px] text-cafe-800/60 mt-1">Ordered Today • Total: ₱500</p>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="markAllComplete(this)" class="text-xs bg-cafe-800 text-white font-medium px-3 py-1.5 rounded-lg">Mark All Done</button>
+                                    <button onclick="removeOrderCard(this, 'Table 2 (Al Fresco)', 'Buzzer #3', 'Card A')" class="text-xs bg-rose-50 text-rose-700 hover:bg-rose-100 font-medium px-3 py-1.5 rounded-lg"><i class="fa-solid fa-check-double mr-1"></i> Close Table & Free Resources</button>
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <p class="text-[10px] font-bold uppercase tracking-wider text-cafe-800/70">Check off items when ready:</p>
+                                <div class="space-y-2">
+                                    <label class="flex items-center justify-between p-2.5 bg-white border border-cafe-200 rounded-xl cursor-pointer">
+                                        <div class="flex items-center gap-3">
+                                            <input type="checkbox" onchange="toggleItemCheck(this)" class="w-4 h-4 rounded text-cafe-accent">
+                                            <span class="text-xs font-medium text-cafe-900">1x Signature Spanish Latte (+ Pearls ₱20)</span>
+                                        </div>
+                                        <span class="text-[10px] text-blue-800 bg-blue-100 font-bold px-2 py-0.5 rounded">Bar • Buzzer #3</span>
+                                    </label>
+                                    <label class="flex items-center justify-between p-2.5 bg-white border border-cafe-200 rounded-xl cursor-pointer">
+                                        <div class="flex items-center gap-3">
+                                            <input type="checkbox" onchange="toggleItemCheck(this)" class="w-4 h-4 rounded text-cafe-accent">
+                                            <span class="text-xs font-medium text-cafe-900">1x Classic Cheeseburger (+ Extra Cheese ₱30)</span>
+                                        </div>
+                                        <span class="text-[10px] text-amber-800 bg-amber-100 font-bold px-2 py-0.5 rounded">Kitchen • Waiter delivers with Card A</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: RESERVATIONS & WALK-INS MANAGER -->
+            <div id="tab-reservations" class="space-y-6 hidden">
+                <div class="bg-white rounded-3xl p-6 border border-cafe-200 shadow-sm space-y-6">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div>
+                            <span class="text-[10px] uppercase font-bold tracking-widest text-cafe-darkaccent bg-cafe-100 px-2.5 py-1 rounded-md">Bookings & Walk-ins</span>
+                            <h2 class="font-serif font-bold text-xl text-cafe-900 mt-2">Reservations & Walk-in Manager</h2>
+                            <p class="text-xs text-cafe-800/70">Manage online reservations and log in-store walk-in event bookings.</p>
+                        </div>
+                        
+                        <div class="flex items-center gap-3">
+                            <div class="flex bg-cafe-100 p-1 rounded-2xl text-xs font-semibold">
+                                <button onclick="filterResTab('current')" id="res-tab-current" class="res-sub-btn px-4 py-2 rounded-xl bg-cafe-900 text-white transition-all shadow-sm">Today / Current</button>
+                                <button onclick="filterResTab('future')" id="res-tab-future" class="res-sub-btn px-4 py-2 rounded-xl text-cafe-800/70 hover:text-cafe-900 transition-all">Future</button>
+                                <button onclick="filterResTab('past')" id="res-tab-past" class="res-sub-btn px-4 py-2 rounded-xl text-cafe-800/70 hover:text-cafe-900 transition-all">Past</button>
+                            </div>
+                            <button onclick="openWalkInModal()" class="bg-cafe-accent hover:bg-cafe-darkaccent text-cafe-900 font-semibold px-4 py-2.5 rounded-xl text-xs transition-all shadow-sm flex items-center gap-2">
+                                <i class="fa-solid fa-plus"></i> + Add Walk-In / Event
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-cafe-50 text-cafe-800 uppercase font-semibold">
+                                <tr>
+                                    <th class="p-4 rounded-l-xl">Guest Details</th>
+                                    <th class="p-4">Schedule</th>
+                                    <th class="p-4">Party Size</th>
+                                    <th class="p-4">Special Requests / Notes</th>
+                                    <th class="p-4">Status</th>
+                                    <th class="p-4 rounded-r-xl text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-cafe-100 font-light" id="reservations-tbody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 5: ORDER HISTORY -->
+            <div id="tab-history" class="space-y-6 hidden">
+                <div class="bg-white rounded-3xl p-6 border border-cafe-200 shadow-sm space-y-6">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="text-[10px] uppercase font-bold tracking-widest text-cafe-darkaccent bg-cafe-100 px-2.5 py-1 rounded-md">Activity Log</span>
+                            <h2 class="font-serif font-bold text-xl text-cafe-900 mt-2">Daily Completed Order History</h2>
+                            <p class="text-xs text-cafe-800/70">Track all completed transactions and business activity for today.</p>
+                        </div>
+                        <button onclick="exportHistory()" class="bg-cafe-100 hover:bg-cafe-200 text-cafe-900 font-semibold px-4 py-2 rounded-xl text-xs transition-all">
+                            <i class="fa-solid fa-download mr-1"></i> Export Daily Summary
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-cafe-50 text-cafe-800 uppercase font-semibold">
+                                <tr>
+                                    <th class="p-4 rounded-l-xl">Order ID</th>
+                                    <th class="p-4">Table / Option</th>
+                                    <th class="p-4">Tags (Buzzer / Letter)</th>
+                                    <th class="p-4">Payment</th>
+                                    <th class="p-4">Total Amount</th>
+                                    <th class="p-4 rounded-r-xl text-right">Completed Time</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-cafe-100 font-light" id="order-history-tbody">
+                                <tr>
+                                    <td colspan="6" class="p-6 text-center text-cafe-800/50 italic">No completed orders recorded yet today.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 6: MENU MANAGER -->
+            <div id="tab-menu" class="space-y-6 hidden">
+                <div class="bg-white rounded-3xl p-6 border border-cafe-200 shadow-sm space-y-6">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="text-[10px] uppercase font-bold tracking-widest text-cafe-darkaccent bg-cafe-100 px-2.5 py-1 rounded-md">Catalog Manager</span>
+                            <h2 class="font-serif font-bold text-xl text-cafe-900 mt-2">Menu Items & Pricing</h2>
+                            <p class="text-xs text-cafe-800/70">Add new beverages or diner meals, edit prices, or manage stock bindings.</p>
+                        </div>
+                        <button onclick="openAddMenuModal()" class="bg-cafe-accent hover:bg-cafe-darkaccent text-cafe-900 font-semibold px-5 py-3 rounded-xl text-xs transition-all shadow-sm flex items-center gap-2">
+                            <i class="fa-solid fa-plus"></i> Add New Menu Item
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="admin-menu-grid">
+                        <div class="bg-cafe-50 border border-cafe-200 rounded-2xl p-4 flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="font-serif font-bold text-cafe-900">Signature Spanish Latte</h3>
+                                    <span class="text-cafe-darkaccent font-bold">₱140</span>
+                                </div>
+                                <p class="text-xs text-cafe-800/70 mb-4">Rich espresso blended with fresh milk and condensed sweetness.</p>
+                            </div>
+                            <div class="flex justify-between items-center pt-3 border-t border-cafe-200">
+                                <span class="text-[10px] font-semibold bg-cafe-200 text-cafe-900 px-2.5 py-0.5 rounded">Coffee</span>
+                                <div class="space-x-2">
+                                    <button onclick="showCafeAlert('Edit Menu', 'Edit modal functionality.')" class="text-cafe-darkaccent hover:underline text-xs font-semibold">Edit</button>
+                                    <button onclick="this.closest('.border').remove()" class="text-rose-600 hover:underline text-xs font-semibold">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 7: INVENTORY & SUPPLIES -->
+            <div id="tab-inventory" class="space-y-6 hidden">
+                <div class="bg-white rounded-3xl p-6 border border-cafe-200 shadow-sm space-y-6">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div>
+                            <span class="text-[10px] uppercase font-bold tracking-widest text-cafe-darkaccent bg-cafe-100 px-2.5 py-1 rounded-md">Supplies & Utilities</span>
+                            <h2 class="font-serif font-bold text-xl text-cafe-900 mt-2">Inventory & Stock Management</h2>
+                            <p class="text-xs text-cafe-800/70">Track ingredients, tissues, cleaning oil, utensils, and update stock levels.</p>
+                        </div>
+                        
+                        <div class="flex flex-wrap items-center gap-2">
+                            <select id="inv-category-select" onchange="filterInventoryCategory()" class="bg-cafe-50 border border-cafe-200 text-xs px-3 py-2.5 rounded-xl focus:outline-none font-medium">
+                                <option value="all">All Categories</option>
+                                <option value="Milktea Supplies">Milktea Supplies</option>
+                                <option value="Coffee Bar">Coffee Bar</option>
+                                <option value="Diner Kitchen">Diner Kitchen</option>
+                                <option value="Utilities & Store">Utilities & Store (Tissue, Oil, etc.)</option>
+                            </select>
+                            <button onclick="filterInventory('low')" id="inv-filter-low" class="inv-filter-btn text-xs font-semibold px-4 py-2.5 rounded-xl bg-rose-50 text-rose-700 border border-rose-200 transition-all flex items-center gap-1.5">
+                                <i class="fa-solid fa-triangle-exclamation"></i> Low Stock Only
+                            </button>
+                            <button onclick="openAddStockModal()" class="bg-cafe-accent hover:bg-cafe-darkaccent text-cafe-900 font-semibold px-4 py-2.5 rounded-xl text-xs transition-all shadow-sm">
+                                + Add Stock Supply
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-cafe-50 text-cafe-800 uppercase font-semibold">
+                                <tr>
+                                    <th class="p-4 rounded-l-xl">Item / Supply Name</th>
+                                    <th class="p-4">Category</th>
+                                    <th class="p-4">Current Stock Level</th>
+                                    <th class="p-4">Unit</th>
+                                    <th class="p-4">Status Alert</th>
+                                    <th class="p-4 rounded-r-xl text-right">Quick Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-cafe-100 font-light" id="inventory-tbody">
+                                <tr class="inventory-row" data-category="Milktea Supplies" data-stock="low">
+                                    <td class="p-4 font-semibold text-cafe-900">Black Pearl Sinking Tapioca</td>
+                                    <td class="p-4">Milktea Supplies</td>
+                                    <td class="p-4 font-bold text-rose-600">3 packs</td>
+                                    <td class="p-4">kg</td>
+                                    <td class="p-4"><span class="bg-rose-100 text-rose-800 px-2.5 py-1 rounded-md font-bold text-[10px] animate-pulse">Low Stock</span></td>
+                                    <td class="p-4 text-right space-x-1">
+                                        <button onclick="promptRestock(this)" class="bg-cafe-100 hover:bg-cafe-200 text-cafe-900 px-3 py-1.5 rounded-lg font-medium transition-all">+ Restock</button>
+                                    </td>
+                                </tr>
+                                <tr class="inventory-row" data-category="Coffee Bar" data-stock="low">
+                                    <td class="p-4 font-semibold text-cafe-900">Arabica Espresso Coffee Beans</td>
+                                    <td class="p-4">Coffee Bar</td>
+                                    <td class="p-4 font-bold text-rose-600">2 bags</td>
+                                    <td class="p-4">kg</td>
+                                    <td class="p-4"><span class="bg-rose-100 text-rose-800 px-2.5 py-1 rounded-md font-bold text-[10px] animate-pulse">Low Stock</span></td>
+                                    <td class="p-4 text-right space-x-1">
+                                        <button onclick="promptRestock(this)" class="bg-cafe-100 hover:bg-cafe-200 text-cafe-900 px-3 py-1.5 rounded-lg font-medium transition-all">+ Restock</button>
+                                    </td>
+                                </tr>
+                                <tr class="inventory-row" data-category="Utilities & Store" data-stock="low">
+                                    <td class="p-4 font-semibold text-cafe-900">Facial Tissue Rolls / Napkins</td>
+                                    <td class="p-4">Utilities & Store</td>
+                                    <td class="p-4 font-bold text-rose-600">4 packs</td>
+                                    <td class="p-4">packs</td>
+                                    <td class="p-4"><span class="bg-rose-100 text-rose-800 px-2.5 py-1 rounded-md font-bold text-[10px] animate-pulse">Low Stock</span></td>
+                                    <td class="p-4 text-right space-x-1">
+                                        <button onclick="promptRestock(this)" class="bg-cafe-100 hover:bg-cafe-200 text-cafe-900 px-3 py-1.5 rounded-lg font-medium transition-all">+ Restock</button>
+                                    </td>
+                                </tr>
+                                <tr class="inventory-row" data-category="Utilities & Store" data-stock="good">
+                                    <td class="p-4 font-semibold text-cafe-900">Deep Fryer Cooking Oil (Gallon)</td>
+                                    <td class="p-4">Utilities & Store</td>
+                                    <td class="p-4 font-bold text-emerald-700">12 gallons</td>
+                                    <td class="p-4">gallons</td>
+                                    <td class="p-4"><span class="bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-md font-semibold text-[10px]">Normal</span></td>
+                                    <td class="p-4 text-right space-x-1">
+                                        <button onclick="promptRestock(this)" class="bg-cafe-100 hover:bg-cafe-200 text-cafe-900 px-3 py-1.5 rounded-lg font-medium transition-all">+ Restock</button>
+                                    </td>
+                                </tr>
+                                <tr class="inventory-row" data-category="Diner Kitchen" data-stock="good">
+                                    <td class="p-4 font-semibold text-cafe-900">Beef Burger Patties (Classic)</td>
+                                    <td class="p-4">Diner Kitchen</td>
+                                    <td class="p-4 font-bold text-emerald-700">45 patties</td>
+                                    <td class="p-4">pcs</td>
+                                    <td class="p-4"><span class="bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-md font-semibold text-[10px]">Normal</span></td>
+                                    <td class="p-4 text-right space-x-1">
+                                        <button onclick="promptRestock(this)" class="bg-cafe-100 hover:bg-cafe-200 text-cafe-900 px-3 py-1.5 rounded-lg font-medium transition-all">+ Restock</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- CUSTOM THEME ALERT MODAL -->
+    <div id="cafe-alert-modal" class="fixed inset-0 z-50 bg-cafe-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 border border-cafe-200 shadow-2xl space-y-4 text-center">
+            <div id="alert-icon-box" class="w-12 h-12 mx-auto rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div>
+                <h3 id="cafe-alert-title" class="font-serif font-bold text-lg text-cafe-900">Notice</h3>
+                <p id="cafe-alert-msg" class="text-xs text-cafe-800/70 mt-1 leading-relaxed">Message here...</p>
+            </div>
+            <button onclick="closeCafeAlert()" class="w-full bg-cafe-accent hover:bg-cafe-darkaccent text-cafe-900 font-bold py-2.5 rounded-xl text-xs transition-all shadow">
+                Got it
+            </button>
+        </div>
+    </div>
+
+    <!-- CUSTOM THEME CONFIRM MODAL -->
+    <div id="cafe-confirm-modal" class="fixed inset-0 z-50 bg-cafe-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 border border-cafe-200 shadow-2xl space-y-4 text-center">
+            <div class="w-12 h-12 mx-auto rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-circle-question"></i>
+            </div>
+            <div>
+                <h3 id="cafe-confirm-title" class="font-serif font-bold text-lg text-cafe-900">Confirm Action</h3>
+                <p id="cafe-confirm-msg" class="text-xs text-cafe-800/70 mt-1 leading-relaxed">Are you sure?</p>
+            </div>
+            <div class="flex gap-2 pt-2">
+                <button id="cafe-confirm-cancel" class="flex-1 bg-cafe-100 hover:bg-cafe-200 text-cafe-900 font-semibold py-2.5 rounded-xl text-xs">Cancel</button>
+                <button id="cafe-confirm-ok" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 rounded-xl text-xs shadow">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADD WALK-IN MODAL -->
+    <div id="walkin-modal" class="fixed inset-0 z-50 bg-cafe-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-8 border border-cafe-200 shadow-2xl space-y-6">
+            <div class="flex justify-between items-center">
+                <div>
+                    <span class="text-[10px] font-bold text-cafe-darkaccent uppercase bg-cafe-100 px-2.5 py-1 rounded">Walk-in / Event</span>
+                    <h3 class="font-serif font-bold text-xl text-cafe-900 mt-2">Add Walk-in or Event Booking</h3>
+                </div>
+                <button onclick="closeWalkInModal()" class="text-cafe-800/60 hover:text-cafe-900 text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="walkin-form" onsubmit="submitWalkInReservation(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-cafe-800 mb-1.5">Guest / Organizer Name</label>
+                    <input type="text" id="walkin-name" required class="w-full bg-cafe-50 border border-cafe-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none" placeholder="e.g. Coach Dennis / Private Party">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-cafe-800 mb-1.5">Contact Number</label>
+                        <input type="tel" id="walkin-phone" required class="w-full bg-cafe-50 border border-cafe-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none" placeholder="09123456789">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-cafe-800 mb-1.5">Party Size</label>
+                        <input type="text" id="walkin-pax" required class="w-full bg-cafe-50 border border-cafe-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none" placeholder="e.g. 15 Persons">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-cafe-800 mb-1.5">Date</label>
+                        <input type="date" id="walkin-date" required class="w-full bg-cafe-50 border border-cafe-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-cafe-800 mb-1.5">Time</label>
+                        <input type="time" id="walkin-time" required class="w-full bg-cafe-50 border border-cafe-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-cafe-800 mb-1.5">Special Notes / Event Setup</label>
+                    <textarea id="walkin-req" rows="2" class="w-full bg-cafe-50 border border-cafe-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none" placeholder="Long table setup, acoustic night, etc."></textarea>
+                </div>
+                <div class="flex gap-3 pt-4">
+                    <button type="button" onclick="closeWalkInModal()" class="flex-1 bg-cafe-100 hover:bg-cafe-200 text-cafe-900 font-semibold py-3 rounded-xl text-xs">Cancel</button>
+                    <button type="submit" class="flex-1 bg-cafe-accent hover:bg-cafe-darkaccent text-cafe-900 font-bold py-3 rounded-xl text-xs shadow">Save Booking</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADD MENU ITEM MODAL -->
+    <div id="menu-modal" class="fixed inset-0 z-50 bg-cafe-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-8 border border-cafe-200 shadow-2xl space-y-6">
+            <div class="flex justify-between items-center">
+                <div>
+                    <span class="text-[10px] font-bold text-cafe-darkaccent uppercase bg-cafe-100 px-2.5 py-1 rounded">New Item</span>
+                    <h3 class="font-serif font-bold text-xl text-cafe-900 mt-2">Add Menu Item</h3>
+                </div>
+                <button onclick="closeAddMenuModal()" class="text-cafe-800/60 hover:text-cafe-900 text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="add-menu-form" onsubmit="submitNewMenuItem(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-cafe-800 mb-1.5">Item Name</label>
+                    <input type="text" id="modal-item-name" required class="w-full bg-cafe-50 border border-cafe-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none" placeholder="e.g. Wintermelon Milktea">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-cafe-800 mb-1.5">Category</label>
+                        <select id="modal-item-cat" class="w-full bg-cafe-50 border border-cafe-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none">
+                            <option value="coffee">Coffee</option>
+                            <option value="milktea">Milktea</option>
+                            <option value="diner">Diner Meal</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-cafe-800 mb-1.5">Price (₱)</label>
+                        <input type="number" id="modal-item-price" required min="1" class="w-full bg-cafe-50 border border-cafe-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none" placeholder="130">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-cafe-800 mb-1.5">Description & Ingredients</label>
+                    <textarea id="modal-item-desc" rows="2" class="w-full bg-cafe-50 border border-cafe-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none" placeholder="Freshly brewed wintermelon tea with pearls..."></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-cafe-800 mb-1.5">Preparation Station</label>
+                    <select id="modal-item-station" class="w-full bg-cafe-50 border border-cafe-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none">
+                        <option value="Bar">Bar (Drinks & Milktea)</option>
+                        <option value="Kitchen">Kitchen (Diner Meals & Burgers)</option>
+                    </select>
+                </div>
+                <div class="flex gap-3 pt-4">
+                    <button type="button" onclick="closeAddMenuModal()" class="flex-1 bg-cafe-100 text-cafe-900 font-semibold py-3 rounded-xl text-xs">Cancel</button>
+                    <button type="submit" class="flex-1 bg-cafe-accent text-cafe-900 font-bold py-3 rounded-xl text-xs shadow">Save Item</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADD STOCK SUPPLY MODAL -->
+    <div id="stock-modal" class="fixed inset-0 z-50 bg-cafe-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-8 border border-cafe-200 shadow-2xl space-y-6">
+            <div class="flex justify-between items-center">
+                <div>
+                    <span class="text-[10px] font-bold text-cafe-darkaccent uppercase bg-cafe-100 px-2.5 py-1 rounded">Inventory</span>
+                    <h3 class="font-serif font-bold text-xl text-cafe-900 mt-2">Add New Stock Supply</h3>
+                </div>
+                <button onclick="closeAddStockModal()" class="text-cafe-800/60 hover:text-cafe-900 text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="add-stock-form" onsubmit="submitNewStockItem(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-cafe-800 mb-1.5">Supply / Item Name</label>
+                    <input type="text" id="stock-name" required class="w-full bg-cafe-50 border border-cafe-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none" placeholder="e.g. Paper Napkins / Cooking Oil">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-cafe-800 mb-1.5">Category</label>
+                    <select id="stock-cat" class="w-full bg-cafe-50 border border-cafe-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none">
+                        <option value="Milktea Supplies">Milktea Supplies</option>
+                        <option value="Coffee Bar">Coffee Bar</option>
+                        <option value="Diner Kitchen">Diner Kitchen</option>
+                        <option value="Utilities & Store">Utilities & Store (Tissue, Oil, etc.)</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-cafe-800 mb-1.5">Stock Quantity</label>
+                        <input type="number" id="stock-qty" required min="0" class="w-full bg-cafe-50 border border-cafe-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none" placeholder="15">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-cafe-800 mb-1.5">Unit</label>
+                        <input type="text" id="stock-unit" required class="w-full bg-cafe-50 border border-cafe-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none" placeholder="packs / gallons / pcs">
+                    </div>
+                </div>
+                <div class="flex gap-3 pt-4">
+                    <button type="button" onclick="closeAddStockModal()" class="flex-1 bg-cafe-100 text-cafe-900 font-semibold py-3 rounded-xl text-xs">Cancel</button>
+                    <button type="submit" class="flex-1 bg-cafe-accent text-cafe-900 font-bold py-3 rounded-xl text-xs shadow">Save Supply</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        const todayDateStr = new Date().toISOString().split('T')[0];
+        let reservationsData = [
+            { id: 1, name: "Maria Santos", phone: "09123456789", date: todayDateStr, time: "18:00", pax: "4 Persons", req: "Al fresco seating preferred", status: "Pending", type: "current" },
+            { id: 2, name: "John Rey Bautista", phone: "09189876543", date: todayDateStr, time: "19:30", pax: "2 Persons", req: "None", status: "Confirmed", type: "current" },
+            { id: 3, name: "Angelica Cruz", phone: "09171112233", date: "2026-11-02", time: "16:00", pax: "6 Persons", req: "Birthday celebration setup", status: "Confirmed", type: "future" },
+            { id: 4, name: "Mark Anthony Lim", phone: "09223334455", date: "2026-11-05", time: "20:00", pax: "3 Persons", req: "Near window", status: "Pending", type: "future" },
+            { id: 5, name: "Rica Mae Dizon", phone: "09087778899", date: "2025-12-15", time: "17:30", pax: "5 Persons", req: "Walk-in event booking", status: "Completed", type: "past" }
+        ];
+
+        // Resource Pools & Occupied Tracking
+        let availableTables = ['Table 1 (Al Fresco)', 'Table 2 (Al Fresco)', 'Table 3 (Indoor Counter)', 'Table 4 (Window Side)', 'Table 5 (VIP Booth)', 'Takeout / Pickup'];
+        let assignedTables = ['Table 2 (Al Fresco)'];
+
+        let availableBuzzers = ['Buzzer #1', 'Buzzer #2', 'Buzzer #3', 'Buzzer #4', 'Buzzer #5', 'Buzzer #6', 'Buzzer #7', 'Buzzer #8', 'Buzzer #9', 'Buzzer #10'];
+        let assignedBuzzers = ['Buzzer #3'];
+
+        let availableLetterCards = ['Card A', 'Card B', 'Card C', 'Card D', 'Card E'];
+        let assignedLetterCards = ['Card A'];
+
+        let orderHistoryData = [];
+
+        let selectedProduct = null;
+        let posCart = [];
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderReservations('current');
+            updateResourcePoolDropdowns();
+            loadFromLocalStorage();
+        });
+
+        // Custom Modal Replacements for Alert and Confirm
+        function showCafeAlert(title, message, type = 'info') {
+            document.getElementById('cafe-alert-title').innerText = title;
+            document.getElementById('cafe-alert-msg').innerText = message;
+            
+            const iconBox = document.getElementById('alert-icon-box');
+            if(type === 'error') {
+                iconBox.className = "w-12 h-12 mx-auto rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-xl";
+                iconBox.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+            } else {
+                iconBox.className = "w-12 h-12 mx-auto rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-xl";
+                iconBox.innerHTML = '<i class="fa-solid fa-circle-info"></i>';
+            }
+
+            document.getElementById('cafe-alert-modal').classList.remove('hidden');
+        }
+
+        function closeCafeAlert() {
+            document.getElementById('cafe-alert-modal').classList.add('hidden');
+        }
+
+        function showCafeConfirm(title, message, onConfirm) {
+            document.getElementById('cafe-confirm-title').innerText = title;
+            document.getElementById('cafe-confirm-msg').innerText = message;
+            
+            const okBtn = document.getElementById('cafe-confirm-ok');
+            const cancelBtn = document.getElementById('cafe-confirm-cancel');
+
+            // Clone to remove old event listeners
+            const newOkBtn = okBtn.cloneNode(true);
+            okBtn.parentNode.replaceChild(newOkBtn, okBtn);
+
+            const newCancelBtn = cancelBtn.cloneNode(true);
+            cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+
+            newOkBtn.addEventListener('click', () => {
+                document.getElementById('cafe-confirm-modal').classList.add('hidden');
+                onConfirm();
+            });
+
+            newCancelBtn.addEventListener('click', () => {
+                document.getElementById('cafe-confirm-modal').classList.add('hidden');
+            });
+
+            document.getElementById('cafe-confirm-modal').classList.remove('hidden');
+        }
+
+        // Dynamic Pools & Table Availability Checker
+        function updateResourcePoolDropdowns() {
+            const tableEl = document.getElementById('pos-table');
+            let tableHtml = '';
+            availableTables.forEach(t => {
+                if (t === 'Takeout / Pickup' || !assignedTables.includes(t)) {
+                    tableHtml += `<option value="${t}">${t} (Available)</option>`;
+                } else {
+                    tableHtml += `<option value="${t}" disabled>${t} (In Use)</option>`;
+                }
+            });
+            tableEl.innerHTML = tableHtml;
+
+            const buzzerEl = document.getElementById('pos-buzzer');
+            let buzzerHtml = '<option value="None">No Drinks / None</option>';
+            availableBuzzers.forEach(b => {
+                if (!assignedBuzzers.includes(b)) {
+                    buzzerHtml += `<option value="${b}">${b} (Available)</option>`;
+                } else {
+                    buzzerHtml += `<option value="${b}" disabled>${b} (In Use)</option>`;
+                }
+            });
+            buzzerEl.innerHTML = buzzerHtml;
+
+            const letterEl = document.getElementById('pos-lettercard');
+            let letterHtml = '<option value="">Select Food Letter Card</option>';
+            availableLetterCards.forEach(c => {
+                if (!assignedLetterCards.includes(c)) {
+                    letterHtml += `<option value="${c}">${c} (Available)</option>`;
+                } else {
+                    letterHtml += `<option value="${c}" disabled>${c} (In Use)</option>`;
+                }
+            });
+            letterEl.innerHTML = letterHtml;
+        }
+
+        // Store Open/Closed Toggle & Full Screen Lock Overlay
+        function toggleStoreStatus(checkbox) {
+            const statusText = document.getElementById("store-status-text");
+            const lockOverlay = document.getElementById("store-offline-lock");
+
+            if (checkbox.checked) {
+                statusText.innerText = "Zapote Store Open";
+                statusText.className = "text-xs font-semibold text-emerald-700";
+                lockOverlay.classList.add("hidden");
+            } else {
+                statusText.innerText = "Store Closed (Offline)";
+                statusText.className = "text-xs font-semibold text-rose-600";
+                lockOverlay.classList.remove("hidden");
+            }
+        }
+
+        function turnStoreOnline() {
+            document.getElementById("store-status-toggle").checked = true;
+            toggleStoreStatus(document.getElementById("store-status-toggle"));
+        }
+
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            const tabs = ['dashboard', 'pos', 'tracker', 'reservations', 'history', 'menu', 'inventory'];
+            tabs.forEach(t => {
+                document.getElementById('tab-' + t).classList.add('hidden');
+                document.getElementById('nav-' + t).className = "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-cafe-200 hover:bg-cafe-800 hover:text-white transition-all";
+            });
+
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+            document.getElementById('nav-' + tabId).className = "w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-cafe-accent text-cafe-900 font-semibold transition-all";
+
+            const titles = {
+                'dashboard': 'Dashboard Overview',
+                'pos': 'POS Terminal',
+                'tracker': 'Kitchen Order Tracker',
+                'reservations': 'Reservations & Walk-ins Manager',
+                'history': 'Daily Order History',
+                'menu': 'Menu Manager',
+                'inventory': 'Inventory & Stock Management'
+            };
+            document.getElementById('page-title').innerText = titles[tabId];
+        }
+
+        // POS Category Filter
+        function filterPosCategory(category) {
+            const cards = document.querySelectorAll('.pos-card');
+            const buttons = document.querySelectorAll('.pos-cat-btn');
+
+            buttons.forEach(btn => {
+                if(btn.getAttribute('data-cat') === category) {
+                    btn.classList.remove('bg-cafe-100', 'text-cafe-900');
+                    btn.classList.add('bg-cafe-900', 'text-white');
+                } else {
+                    btn.classList.remove('bg-cafe-900', 'text-white');
+                    btn.classList.add('bg-cafe-100', 'text-cafe-900');
+                }
+            });
+
+            cards.forEach(card => {
+                if(category === 'all' || card.getAttribute('data-category') === category) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // POS Select Product & Add-ons with Quantity Selectors
+        function selectProduct(name, price, category) {
+            selectedProduct = { name, price, category };
+            document.getElementById('selected-product-name').innerText = name;
+            document.getElementById('selected-product-price').innerText = '₱' + price;
+
+            const addonsContainer = document.getElementById('addons-container');
+            let addonsHtml = '<p class="text-[11px] font-bold text-cafe-900 uppercase">Available Add-ons (Set Qty):</p>';
+
+            if (category === 'milktea' || category === 'coffee') {
+                addonsHtml += `
+                    <div class="space-y-2 text-xs">
+                        <div class="flex items-center justify-between bg-white p-2 rounded-xl border border-cafe-200">
+                            <span>Extra Pearls (+₱20)</span>
+                            <input type="number" min="0" value="0" class="addon-input w-14 bg-cafe-50 border border-cafe-200 rounded-lg text-center py-1 font-medium" data-addon="Extra Pearls" data-price="20">
+                        </div>
+                        <div class="flex items-center justify-between bg-white p-2 rounded-xl border border-cafe-200">
+                            <span>Cream Cheese Sinker (+₱30)</span>
+                            <input type="number" min="0" value="0" class="addon-input w-14 bg-cafe-50 border border-cafe-200 rounded-lg text-center py-1 font-medium" data-addon="Cream Cheese Sinker" data-price="30">
+                        </div>
+                        <div class="flex items-center justify-between bg-white p-2 rounded-xl border border-cafe-200">
+                            <span>Extra Espresso Shot (+₱40)</span>
+                            <input type="number" min="0" value="0" class="addon-input w-14 bg-cafe-50 border border-cafe-200 rounded-lg text-center py-1 font-medium" data-addon="Extra Espresso Shot" data-price="40">
+                        </div>
+                    </div>
+                `;
+            } else if (category === 'diner') {
+                addonsHtml += `
+                    <div class="space-y-2 text-xs">
+                        <div class="flex items-center justify-between bg-white p-2 rounded-xl border border-cafe-200">
+                            <span>Extra Cheddar Cheese (+₱30)</span>
+                            <input type="number" min="0" value="0" class="addon-input w-14 bg-cafe-50 border border-cafe-200 rounded-lg text-center py-1 font-medium" data-addon="Extra Cheddar Cheese" data-price="30">
+                        </div>
+                        <div class="flex items-center justify-between bg-white p-2 rounded-xl border border-cafe-200">
+                            <span>Extra Beef Patty (+₱60)</span>
+                            <input type="number" min="0" value="0" class="addon-input w-14 bg-cafe-50 border border-cafe-200 rounded-lg text-center py-1 font-medium" data-addon="Extra Beef Patty" data-price="60">
+                        </div>
+                        <div class="flex items-center justify-between bg-white p-2 rounded-xl border border-cafe-200">
+                            <span>Garlic Mayo Dip (+₱20)</span>
+                            <input type="number" min="0" value="0" class="addon-input w-14 bg-cafe-50 border border-cafe-200 rounded-lg text-center py-1 font-medium" data-addon="Garlic Mayo Dip" data-price="20">
+                        </div>
+                    </div>
+                `;
+            } else {
+                addonsHtml += '<p class="text-[11px] text-cafe-800/60 italic">No add-ons available for this item.</p>';
+            }
+            addonsContainer.innerHTML = addonsHtml;
+        }
+
+        // Smart Auto-Merging Cart Logic
+        function addItemToCart() {
+            if (!selectedProduct) {
+                showCafeAlert("Selection Required", "Please select a product from the catalog first.", "error");
+                return;
+            }
+            const qty = parseInt(document.getElementById('pos-qty').value) || 1;
+            const addonInputs = document.querySelectorAll('.addon-input');
+            let selectedAddons = [];
+            let addonTotal = 0;
+
+            addonInputs.forEach(input => {
+                const count = parseInt(input.value) || 0;
+                if (count > 0) {
+                    const name = input.getAttribute('data-addon');
+                    const price = parseFloat(input.getAttribute('data-price'));
+                    selectedAddons.push({ name: name, price: price, count: count });
+                    addonTotal += (price * count);
+                }
+            });
+
+            const addonSignature = JSON.stringify(selectedAddons);
+            const existingIndex = posCart.findIndex(item => 
+                item.name === selectedProduct.name && JSON.stringify(item.addons) === addonSignature
+            );
+
+            if (existingIndex > -1) {
+                posCart[existingIndex].qty += qty;
+            } else {
+                posCart.push({
+                    id: Date.now() + Math.random(),
+                    name: selectedProduct.name,
+                    category: selectedProduct.category,
+                    addons: selectedAddons,
+                    unitPrice: selectedProduct.price + addonTotal,
+                    qty: qty
+                });
+            }
+
+            renderPOSCart();
+            document.getElementById('pos-qty').value = '1';
+            document.querySelectorAll('.addon-input').forEach(input => input.value = '0');
+        }
+
+        function removePOSCartItem(index) {
+            posCart.splice(index, 1);
+            renderPOSCart();
+        }
+
+        function clearCart() {
+            posCart = [];
+            renderPOSCart();
+        }
+
+        function renderPOSCart() {
+            const listEl = document.getElementById('pos-cart-list');
+            const totalEl = document.getElementById('pos-grand-total');
+            const countEl = document.getElementById('cart-item-count');
+            
+            countEl.innerText = posCart.length;
+
+            if (posCart.length === 0) {
+                listEl.innerHTML = '<p class="text-cafe-800/50 italic text-center py-6">No items added yet.</p>';
+                totalEl.innerText = '₱0';
+                return;
+            }
+            let html = '';
+            let grandTotal = 0;
+            posCart.forEach((item, index) => {
+                const subtotal = item.unitPrice * item.qty;
+                grandTotal += subtotal;
+                
+                let addonsText = '';
+                if (item.addons.length > 0) {
+                    addonsText = '<br><span class="text-[10px] text-cafe-darkaccent font-medium">+ ' + 
+                        item.addons.map(a => `${a.count}x ${a.name}`).join(', ') + '</span>';
+                }
+
+                html += `
+                    <div class="flex justify-between items-start bg-white p-2.5 rounded-xl border border-cafe-200">
+                        <div>
+                            <p class="font-medium text-cafe-900">${item.qty}x ${item.name}${addonsText}</p>
+                            <p class="text-[10px] text-cafe-800/60">Subtotal: ₱${subtotal.toLocaleString()}</p>
+                        </div>
+                        <button type="button" onclick="removePOSCartItem(${index})" class="text-rose-600 hover:text-rose-800 p-1 font-bold text-xs" title="Remove item"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
+            });
+            listEl.innerHTML = html;
+            totalEl.innerText = '₱' + grandTotal.toLocaleString();
+        }
+
+        function submitPOSOrder() {
+            if (posCart.length === 0) {
+                showCafeAlert("Empty Slip", "Please add items to the order slip before checking out.", "error");
+                return;
+            }
+            const table = document.getElementById('pos-table').value;
+            const buzzer = document.getElementById('pos-buzzer').value;
+            const letterCard = document.getElementById('pos-lettercard').value;
+
+            const hasFood = posCart.some(i => i.category === 'diner');
+            if (hasFood && !letterCard) {
+                showCafeAlert("Card Required", "Please assign an available Food Letter Card for diner meals!", "error");
+                return;
+            }
+
+            // Lock occupied resources
+            if (table !== 'Takeout / Pickup') assignedTables.push(table);
+            if (buzzer !== 'None') assignedBuzzers.push(buzzer);
+            if (letterCard) assignedLetterCards.push(letterCard);
+            updateResourcePoolDropdowns();
+
+            const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+            const container = document.getElementById('active-orders-container');
+            let grandTotal = posCart.reduce((sum, item) => sum + (item.unitPrice * item.qty), 0);
+            let itemsHtml = '';
+
+            posCart.forEach(item => {
+                let addonsDesc = item.addons.length > 0 ? ` (+ ${item.addons.map(a => `${a.count}x ${a.name}`).join(', ')})` : '';
+                let station = item.category === 'diner' ? 'Kitchen' : 'Bar';
+                let tagInfo = station === 'Bar' ? `Bar • ${buzzer}` : `Kitchen • Waiter delivers with ${letterCard || 'Counter'}`;
+                let badgeColor = station === 'Kitchen' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800';
+                
+                itemsHtml += `
+                    <label class="flex items-center justify-between p-2.5 bg-white border border-cafe-200 rounded-xl cursor-pointer">
+                        <div class="flex items-center gap-3">
+                            <input type="checkbox" onchange="toggleItemCheck(this)" class="w-4 h-4 rounded text-cafe-accent">
+                            <span class="text-xs font-medium text-cafe-900">${item.qty}x ${item.name}${addonsDesc}</span>
+                        </div>
+                        <span class="text-[10px] font-bold ${badgeColor} px-2 py-0.5 rounded">${tagInfo}</span>
+                    </label>
+                `;
+            });
+
+            const cardLetterAttr = letterCard || 'None';
+            const buzzerAttr = buzzer;
+            const tableAttr = table;
+            
+            const letterBadge = letterCard ? `<span class="bg-indigo-100 text-indigo-800 text-[10px] font-bold px-2.5 py-0.5 rounded-md">Food Tag: ${letterCard}</span>` : '';
+            const buzzerBadge = buzzer !== 'None' ? `<span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded-md">Drink Tag: ${buzzer}</span>` : '';
+
+            const newCard = document.createElement('div');
+            newCard.className = "border border-cafe-200 rounded-2xl p-5 bg-cafe-50/50 space-y-4";
+            newCard.innerHTML = `
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 pb-3 border-b border-cafe-200">
+                    <div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <h3 class="font-serif font-bold text-lg text-cafe-900">${table}</h3>
+                            ${letterBadge}
+                            ${buzzerBadge}
+                            <span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-md">Paid via ${paymentMethod}</span>
+                        </div>
+                        <p class="text-[11px] text-cafe-800/60 mt-1">Just now • Total: ₱${grandTotal.toLocaleString()}</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="markAllComplete(this)" class="text-xs bg-cafe-800 text-white font-medium px-3 py-1.5 rounded-lg">Mark All Done</button>
+                        <button onclick="removeOrderCard(this, '${tableAttr}', '${buzzerAttr}', '${cardLetterAttr}', '${grandTotal.toLocaleString()}')" class="text-xs bg-rose-50 text-rose-700 hover:bg-rose-100 font-medium px-3 py-1.5 rounded-lg"><i class="fa-solid fa-check-double mr-1"></i> Close Table & Free Resources</button>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <p class="text-[10px] font-bold uppercase tracking-wider text-cafe-800/70">Check off items when ready (Must be done to close table):</p>
+                    <div class="space-y-2">${itemsHtml}</div>
+                </div>
+            `;
+            container.prepend(newCard);
+            posCart = [];
+            renderPOSCart();
+            selectedProduct = null;
+            document.getElementById('selected-product-name').innerText = 'Click a product above';
+            document.getElementById('selected-product-price').innerText = '₱0';
+            document.getElementById('addons-container').innerHTML = '<p class="text-[11px] text-cafe-800/60 italic">Select a product to view available add-ons.</p>';
+            document.getElementById('pos-lettercard').value = '';
+            document.getElementById('pos-buzzer').value = 'None';
+            
+            saveToLocalStorage();
+            showCafeAlert("Order Processed", "Order successfully processed and sent to the Kitchen Order Tracker!");
+            switchTab('tracker');
+        }
+
+        // Tracker Checklists & Strict Prerequisite Check
+        function toggleItemCheck(checkbox) {
+            const labelSpan = checkbox.nextElementSibling;
+            if (checkbox.checked) {
+                labelSpan.classList.add('line-through', 'text-cafe-800/40');
+            } else {
+                labelSpan.classList.remove('line-through', 'text-cafe-800/40');
+            }
+        }
+        function markAllComplete(btn) {
+            const card = btn.closest('.border');
+            card.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                cb.checked = true;
+                cb.nextElementSibling.classList.add('line-through', 'text-cafe-800/40');
+            });
+        }
+
+        function removeOrderCard(btn, tableName, buzzerName, letterCard, totalAmount) {
+            const card = btn.closest('.border');
+            const checkboxes = card.querySelectorAll('input[type="checkbox"]');
+            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+
+            if (!allChecked) {
+                showCafeAlert("Incomplete Items", "⚠️ Cannot close table yet! Please ensure all items in the checklist have been marked as done.", "error");
+                return;
+            }
+
+            showCafeConfirm(
+                "Close Table & Free Resources",
+                `Release ${tableName} / ${buzzerName} / ${letterCard} back to available pools?`,
+                () => {
+                    if (tableName && tableName !== 'Takeout / Pickup') {
+                        assignedTables = assignedTables.filter(t => t !== tableName);
+                    }
+                    if (buzzerName && buzzerName !== 'None') {
+                        assignedBuzzers = assignedBuzzers.filter(b => b !== buzzerName);
+                    }
+                    if (letterCard && letterCard !== 'None') {
+                        assignedLetterCards = assignedLetterCards.filter(c => c !== letterCard);
+                    }
+                    updateResourcePoolDropdowns();
+
+                    const orderId = 'ORD-' + Math.floor(1000 + Math.random() * 9000);
+                    const timeClosed = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    const tags = `${buzzerName !== 'None' ? buzzerName : ''} ${letterCard !== 'None' ? '/ ' + letterCard : ''}`.trim() || 'Counter';
+
+                    orderHistoryData.unshift({
+                        id: orderId,
+                        table: tableName,
+                        tags: tags,
+                        payment: 'Paid',
+                        total: '₱' + totalAmount,
+                        time: timeClosed
+                    });
+                    renderOrderHistory();
+
+                    card.remove();
+                }
+            );
+        }
+
+        // Render Order History
+        function renderOrderHistory() {
+            const tbody = document.getElementById('order-history-tbody');
+            if (orderHistoryData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-cafe-800/50 italic">No completed orders recorded yet today.</td></tr>`;
+                return;
+            }
+
+            let html = '';
+            orderHistoryData.forEach(ord => {
+                html += `
+                    <tr>
+                        <td class="p-4 font-bold text-cafe-900">${ord.id}</td>
+                        <td class="p-4">${ord.table}</td>
+                        <td class="p-4"><span class="bg-cafe-100 text-cafe-900 px-2 py-0.5 rounded font-semibold text-[10px]">${ord.tags}</span></td>
+                        <td class="p-4"><span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-medium text-[10px]">${ord.payment}</span></td>
+                        <td class="p-4 font-bold text-cafe-darkaccent">${ord.total}</td>
+                        <td class="p-4 text-right text-cafe-800/70">${ord.time}</td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        function exportHistory() {
+            if (orderHistoryData.length === 0) {
+                showCafeAlert("Export Summary", "No history records to export for today.");
+                return;
+            }
+            showCafeAlert("Export Summary", "Daily order summary successfully exported!");
+        }
+
+        // Reservations & Walk-ins Modals
+        function filterResTab(type) {
+            document.querySelectorAll('.res-sub-btn').forEach(btn => {
+                btn.className = "res-sub-btn px-4 py-2 rounded-xl text-cafe-800/70 hover:text-cafe-900 transition-all";
+            });
+            document.getElementById('res-tab-' + type).className = "res-sub-btn px-4 py-2 rounded-xl bg-cafe-900 text-white transition-all shadow-sm";
+            renderReservations(type);
+        }
+
+        function renderReservations(type) {
+            const tbody = document.getElementById('reservations-tbody');
+            let filtered = reservationsData.filter(r => {
+                if (type === 'current') return r.date === todayDateStr;
+                if (type === 'future') return r.date > todayDateStr;
+                if (type === 'past') return r.date < todayDateStr;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-cafe-800/50 italic">No ${type} reservations or walk-ins found.</td></tr>`;
+                return;
+            }
+
+            let html = '';
+            filtered.forEach(r => {
+                let badgeBg = r.status === 'Confirmed' ? 'bg-emerald-100 text-emerald-800' : (r.status === 'Pending' ? 'bg-amber-100 text-amber-800' : 'bg-gray-100 text-gray-700');
+                html += `
+                    <tr>
+                        <td class="p-4">
+                            <p class="font-semibold text-cafe-900">${r.name}</p>
+                            <p class="text-[11px] text-cafe-800/60">${r.phone}</p>
+                        </td>
+                        <td class="p-4">${r.date}<br><span class="font-semibold">${r.time}</span></td>
+                        <td class="p-4">${r.pax}</td>
+                        <td class="p-4 italic text-cafe-800/70">"${r.req}"</td>
+                        <td class="p-4"><span class="${badgeBg} px-2.5 py-1 rounded-lg font-medium text-[10px]">${r.status}</span></td>
+                        <td class="p-4 text-right space-x-1">
+                            <button onclick="showCafeAlert('Booking', 'Reservation confirmed!')" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 p-2 rounded-lg font-medium" title="Confirm"><i class="fa-solid fa-check"></i></button>
+                            <button onclick="showCafeAlert('Booking', 'Reservation cancelled.')" class="bg-rose-50 text-rose-700 hover:bg-rose-100 p-2 rounded-lg font-medium" title="Decline"><i class="fa-solid fa-xmark"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        function openWalkInModal() {
+            document.getElementById('walkin-modal').classList.remove('hidden');
+        }
+        function closeWalkInModal() {
+            document.getElementById('walkin-modal').classList.add('hidden');
+        }
+        function submitWalkInReservation(e) {
+            e.preventDefault();
+            const name = document.getElementById('walkin-name').value;
+            const phone = document.getElementById('walkin-phone').value;
+            const pax = document.getElementById('walkin-pax').value;
+            const date = document.getElementById('walkin-date').value;
+            const time = document.getElementById('walkin-time').value;
+            const req = document.getElementById('walkin-req').value || 'Walk-in booking';
+
+            let type = 'current';
+            if (date > todayDateStr) type = 'future';
+            if (date < todayDateStr) type = 'past';
+
+            reservationsData.push({
+                id: reservationsData.length + 1,
+                name, phone, date, time, pax, req,
+                status: "Confirmed",
+                type
+            });
+
+            saveToLocalStorage();
+            closeWalkInModal();
+            document.getElementById('walkin-form').reset();
+            renderReservations(type);
+            showCafeAlert("Booking Logged", "Walk-in or event booking successfully logged!");
+        }
+
+        // Add Menu Item Modal
+        function openAddMenuModal() {
+            document.getElementById('menu-modal').classList.remove('hidden');
+        }
+        function closeAddMenuModal() {
+            document.getElementById('menu-modal').classList.add('hidden');
+        }
+        function submitNewMenuItem(e) {
+            e.preventDefault();
+            const name = document.getElementById('modal-item-name').value;
+            const cat = document.getElementById('modal-item-cat').value;
+            const price = document.getElementById('modal-item-price').value;
+            const desc = document.getElementById('modal-item-desc').value;
+            const station = document.getElementById('modal-item-station').value;
+
+            const grid = document.getElementById('admin-menu-grid');
+            const newCard = document.createElement('div');
+            newCard.className = "bg-cafe-50 border border-cafe-200 rounded-2xl p-4 flex flex-col justify-between";
+            newCard.innerHTML = `
+                <div>
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="font-serif font-bold text-cafe-900">${name}</h3>
+                        <span class="text-cafe-darkaccent font-bold">₱${parseInt(price).toLocaleString()}</span>
+                    </div>
+                    <p class="text-xs text-cafe-800/70 mb-4">${desc || 'Prepared fresh at the ' + station + '.'}</p>
+                </div>
+                <div class="flex justify-between items-center pt-3 border-t border-cafe-200">
+                    <span class="text-[10px] font-semibold bg-cafe-200 text-cafe-900 px-2.5 py-0.5 rounded capitalize">${cat} (${station})</span>
+                    <div class="space-x-2">
+                        <button onclick="showCafeAlert('Edit Menu', 'Edit modal functionality.')" class="text-cafe-darkaccent hover:underline text-xs font-semibold">Edit</button>
+                        <button onclick="this.closest('.border').remove()" class="text-rose-600 hover:underline text-xs font-semibold">Delete</button>
+                    </div>
+                </div>
+            `;
+            grid.prepend(newCard);
+            closeAddMenuModal();
+            document.getElementById('add-menu-form').reset();
+            saveToLocalStorage();
+            showCafeAlert("Success", "New menu item successfully added!");
+        }
+
+        // Inventory Category Filter & Management
+        function filterInventoryCategory() {
+            const selectedCat = document.getElementById('inv-category-select').value;
+            const rows = document.querySelectorAll('.inventory-row');
+            
+            rows.forEach(r => {
+                const rowCat = r.getAttribute('data-category');
+                if (selectedCat === 'all' || rowCat === selectedCat) {
+                    r.style.display = '';
+                } else {
+                    r.style.display = 'none';
+                }
+            });
+        }
+
+        function filterInventory(filterType) {
+            const rows = document.querySelectorAll('.inventory-row');
+            const btnLow = document.getElementById('inv-filter-low');
+
+            if (filterType === 'low') {
+                btnLow.className = "inv-filter-btn text-xs font-semibold px-4 py-2.5 rounded-xl bg-rose-600 text-white transition-all flex items-center gap-1.5 shadow-sm";
+                rows.forEach(r => {
+                    if (r.getAttribute('data-stock') === 'low') {
+                        r.style.display = '';
+                    } else {
+                        r.style.display = 'none';
+                    }
+                });
+            } else {
+                btnLow.className = "inv-filter-btn text-xs font-semibold px-4 py-2.5 rounded-xl bg-rose-50 text-rose-700 border border-rose-200 transition-all flex items-center gap-1.5";
+                filterInventoryCategory();
+            }
+        }
+
+        function promptRestock(btn) {
+            const row = btn.closest('tr');
+            const stockCell = row.cells[2];
+            const badgeCell = row.cells[4];
+            
+            let currentText = stockCell.innerText;
+            let parts = currentText.split(' ');
+            let currentQty = parseInt(parts[0]) || 0;
+            let unit = parts[1] || 'units';
+
+            let inputVal = prompt(`Enter restock quantity to add (Current: ${currentQty} ${unit}):`, "10");
+            if (inputVal === null) return;
+            
+            let addAmt = parseInt(inputVal);
+            if (isNaN(addAmt) || addAmt <= 0) {
+                showCafeAlert("Invalid Input", "Please enter a valid positive number.", "error");
+                return;
+            }
+
+            let newTotal = currentQty + addAmt;
+            stockCell.innerText = newTotal + ' ' + unit;
+
+            if (newTotal >= 5) {
+                row.setAttribute('data-stock', 'good');
+                stockCell.className = "p-4 font-bold text-emerald-700";
+                badgeCell.innerHTML = '<span class="bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-md font-semibold text-[10px]">Normal</span>';
+            } else {
+                row.setAttribute('data-stock', 'low');
+                stockCell.className = "p-4 font-bold text-rose-600";
+                badgeCell.innerHTML = '<span class="bg-rose-100 text-rose-800 px-2.5 py-1 rounded-md font-bold text-[10px] animate-pulse">Low Stock</span>';
+            }
+
+            saveToLocalStorage();
+            showCafeAlert("Restocked", `Successfully added +${addAmt} ${unit}! New total: ${newTotal} ${unit}`);
+        }
+
+        function openAddStockModal() {
+            document.getElementById('stock-modal').classList.remove('hidden');
+        }
+        function closeAddStockModal() {
+            document.getElementById('stock-modal').classList.add('hidden');
+        }
+        function submitNewStockItem(e) {
+            e.preventDefault();
+            const name = document.getElementById('stock-name').value;
+            const cat = document.getElementById('stock-cat').value;
+            const qty = parseInt(document.getElementById('stock-qty').value);
+            const unit = document.getElementById('stock-unit').value;
+
+            const tbody = document.getElementById('inventory-tbody');
+            const isLow = qty < 5;
+            const statusBadge = isLow 
+                ? '<span class="bg-rose-100 text-rose-800 px-2.5 py-1 rounded-md font-bold text-[10px] animate-pulse">Low Stock</span>'
+                : '<span class="bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-md font-semibold text-[10px]">Normal</span>';
+            const qtyColor = isLow ? 'font-bold text-rose-600' : 'font-bold text-emerald-700';
+
+            const newTr = document.createElement('tr');
+            newTr.className = "inventory-row";
+            newTr.setAttribute('data-category', cat);
+            newTr.setAttribute('data-stock', isLow ? 'low' : 'good');
+            newTr.innerHTML = `
+                <td class="p-4 font-semibold text-cafe-900">${name}</td>
+                <td class="p-4">${cat}</td>
+                <td class="p-4 ${qtyColor}">${qty} ${unit}</td>
+                <td class="p-4">${unit}</td>
+                <td class="p-4">${statusBadge}</td>
+                <td class="p-4 text-right space-x-1">
+                    <button onclick="promptRestock(this)" class="bg-cafe-100 hover:bg-cafe-200 text-cafe-900 px-3 py-1.5 rounded-lg font-medium transition-all">+ Restock</button>
+                </td>
+            `;
+            tbody.prepend(newTr);
+            closeAddStockModal();
+            document.getElementById('add-stock-form').reset();
+            saveToLocalStorage();
+            showCafeAlert("Success", "New stock supply added successfully!");
+        }
+
+        // LocalStorage persistence
+        function saveToLocalStorage() {
+            localStorage.setItem('cafe_uno_reservations', JSON.stringify(reservationsData));
+        }
+
+        function loadFromLocalStorage() {
+            const savedRes = localStorage.getItem('cafe_uno_reservations');
+            if (savedRes) {
+                reservationsData = JSON.parse(savedRes);
+                renderReservations('current');
+            }
+        }
+    </script>
+
+    <!-- Service Worker Registration for Offline Capability -->
+    <script>
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register("/sw.js")
+                    .then(reg => console.log("Service Worker registered! Offline mode active.", reg))
+                    .catch(err => console.log("Service Worker registration failed:", err));
+            });
+        }
+    </script>
+</body>
+</html>

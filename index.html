@@ -1,0 +1,912 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cafe Uno | Milktea + Coffee + Diner</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              cafe: {
+                50: "#fdfbf7",
+                100: "#f7f1e3",
+                200: "#eedcc7",
+                800: "#3d2c1e",
+                900: "#261b12",
+                accent: "#d4a373",
+                darkaccent: "#bc6c25",
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <!-- FontAwesome for Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+      }
+      h1,
+      h2,
+      h3,
+      .font-serif {
+        font-family: "Playfair Display", serif;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-cafe-50 text-cafe-800 antialiased selection:bg-cafe-accent selection:text-white"
+  >
+    <!-- Navigation Bar -->
+    <header
+      class="fixed top-0 left-0 right-0 z-50 bg-cafe-900/95 backdrop-blur-md text-white border-b border-cafe-800 transition-all duration-300"
+      id="navbar"
+    >
+      <div
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between"
+      >
+        <!-- Logo / Brand -->
+        <a href="#" class="flex items-center gap-3 group">
+          <div
+            class="w-10 h-10 rounded-full bg-cafe-accent flex items-center justify-center text-cafe-900 font-bold text-lg shadow-md group-hover:scale-105 transition-transform"
+          >
+            <i class="fa-solid fa-mug-hot"></i>
+          </div>
+          <div>
+            <span
+              class="text-xl font-bold tracking-wider font-serif text-amber-50"
+              >Cafe Uno</span
+            >
+            <span
+              class="block text-[10px] uppercase tracking-widest text-cafe-accent font-medium"
+              >Milktea + Coffee + Diner</span
+            >
+          </div>
+        </a>
+
+        <!-- Desktop Nav Links -->
+        <nav class="hidden md:flex items-center gap-8 text-sm font-medium">
+          <a href="#home" class="hover:text-cafe-accent transition-colors"
+            >Home</a
+          >
+          <a href="#about" class="hover:text-cafe-accent transition-colors"
+            >About</a
+          >
+          <a href="#menu" class="hover:text-cafe-accent transition-colors"
+            >Menu</a
+          >
+          <a
+            href="#reservation"
+            class="hover:text-cafe-accent transition-colors"
+            >Reservations</a
+          >
+          <a href="#contact" class="hover:text-cafe-accent transition-colors"
+            >Contact</a
+          >
+        </nav>
+
+        <!-- CTA Button -->
+        <div class="hidden md:flex items-center gap-4">
+          <a
+            href="tel:09164360363"
+            class="flex items-center gap-2 text-xs font-semibold bg-cafe-800 hover:bg-cafe-700 px-4 py-2.5 rounded-full border border-cafe-700 transition-all"
+          >
+            <i class="fa-solid fa-phone text-cafe-accent"></i>
+            <span>0916 436 0363</span>
+          </a>
+          <a
+            href="#reservation"
+            class="bg-cafe-accent hover:bg-cafe-darkaccent text-cafe-900 font-semibold px-5 py-2.5 rounded-full text-xs transition-all shadow-md"
+          >
+            Book Table
+          </a>
+        </div>
+
+        <!-- Mobile Menu Button -->
+        <button
+          id="menu-btn"
+          class="md:hidden text-white text-2xl focus:outline-none"
+        >
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+
+      <!-- Mobile Menu dropdown -->
+      <div
+        id="mobile-menu"
+        class="hidden md:hidden bg-cafe-900 border-t border-cafe-800 px-6 py-6 space-y-4"
+      >
+        <a
+          href="#home"
+          class="block text-base font-medium hover:text-cafe-accent"
+          >Home</a
+        >
+        <a
+          href="#about"
+          class="block text-base font-medium hover:text-cafe-accent"
+          >About</a
+        >
+        <a
+          href="#menu"
+          class="block text-base font-medium hover:text-cafe-accent"
+          >Menu</a
+        >
+        <a
+          href="#reservation"
+          class="block text-base font-medium hover:text-cafe-accent"
+          >Reservations</a
+        >
+        <a
+          href="#contact"
+          class="block text-base font-medium hover:text-cafe-accent"
+          >Contact</a
+        >
+        <div class="pt-4 border-t border-cafe-800 flex flex-col gap-3">
+          <a
+            href="tel:09164360363"
+            class="flex items-center justify-center gap-2 text-sm font-semibold bg-cafe-800 py-3 rounded-xl"
+          >
+            <i class="fa-solid fa-phone text-cafe-accent"></i> 0916 436 0363
+          </a>
+          <a
+            href="#reservation"
+            class="bg-cafe-accent text-cafe-900 font-bold py-3 rounded-xl text-center"
+          >
+            Book a Table
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section
+      id="home"
+      class="relative min-h-screen flex items-center justify-center bg-cafe-900 text-white pt-20 overflow-hidden"
+    >
+      <div
+        class="absolute inset-0 z-0 opacity-40 bg-cover bg-center"
+        style="
+          background-image: url(&quot;https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1920&q=80&quot;);
+        "
+      ></div>
+      <div
+        class="absolute inset-0 bg-gradient-to-t from-cafe-900 via-cafe-900/60 to-transparent z-0"
+      ></div>
+
+      <div class="relative z-10 max-w-5xl mx-auto px-4 text-center py-20">
+        <span
+          class="inline-block bg-cafe-accent/20 text-cafe-accent border border-cafe-accent/30 px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider uppercase mb-6 backdrop-blur-sm"
+        >
+          ☕ Las Piñas’ Cozy Neighborhood Spot
+        </span>
+        <h1
+          class="text-4xl sm:text-6xl lg:text-7xl font-serif font-bold tracking-tight mb-6 leading-tight"
+        >
+          Milktea, Coffee <br class="hidden sm:inline" />& Hearty Diner Meals
+        </h1>
+        <p
+          class="text-base sm:text-lg text-cafe-200 max-w-2xl mx-auto mb-10 font-light leading-relaxed"
+        >
+          Welcome to Cafe Uno! Your favorite hangout spot along Fruto Santos
+          Avenue, Zapote. Serving freshly brewed coffee, refreshing milkteas,
+          and comforting diner classics everyday.
+        </p>
+        <div
+          class="flex flex-col sm:flex-row items-center justify-center gap-4"
+        >
+          <a
+            href="#menu"
+            class="w-full sm:w-auto bg-cafe-accent hover:bg-cafe-darkaccent text-cafe-900 font-bold px-8 py-4 rounded-full shadow-lg transition-all transform hover:-translate-y-0.5"
+          >
+            Explore Our Menu
+          </a>
+          <a
+            href="#reservation"
+            class="w-full sm:w-auto bg-white/10 hover:bg-white/20 text-white border border-white/20 font-semibold px-8 py-4 rounded-full backdrop-blur-md transition-all"
+          >
+            Make a Reservation
+          </a>
+        </div>
+
+        <!-- Quick info badges -->
+        <div
+          class="mt-16 grid grid-cols-2 md:grid-cols-3 gap-4 max-w-3xl mx-auto text-left"
+        >
+          <div
+            class="bg-cafe-800/80 backdrop-blur-md border border-cafe-700/60 p-4 rounded-2xl flex items-center gap-3"
+          >
+            <div
+              class="w-10 h-10 rounded-xl bg-cafe-accent/20 text-cafe-accent flex items-center justify-center shrink-0"
+            >
+              <i class="fa-solid fa-location-dot"></i>
+            </div>
+            <div>
+              <h4 class="text-xs font-semibold text-cafe-accent uppercase">
+                Location
+              </h4>
+              <p class="text-xs text-cafe-100 truncate">
+                Fruto Santos Ave, Zapote
+              </p>
+            </div>
+          </div>
+          <div
+            class="bg-cafe-800/80 backdrop-blur-md border border-cafe-700/60 p-4 rounded-2xl flex items-center gap-3"
+          >
+            <div
+              class="w-10 h-10 rounded-xl bg-cafe-accent/20 text-cafe-accent flex items-center justify-center shrink-0"
+            >
+              <i class="fa-solid fa-utensils"></i>
+            </div>
+            <div>
+              <h4 class="text-xs font-semibold text-cafe-accent uppercase">
+                Services
+              </h4>
+              <p class="text-xs text-cafe-100">Dine-in, Takeout & Delivery</p>
+            </div>
+          </div>
+          <div
+            class="bg-cafe-800/80 backdrop-blur-md border border-cafe-700/60 p-4 rounded-2xl col-span-2 md:col-span-1 flex items-center gap-3"
+          >
+            <div
+              class="w-10 h-10 rounded-xl bg-cafe-accent/20 text-cafe-accent flex items-center justify-center shrink-0"
+            >
+              <i class="fa-solid fa-users"></i>
+            </div>
+            <div>
+              <h4 class="text-xs font-semibold text-cafe-accent uppercase">
+                Community
+              </h4>
+              <p class="text-xs text-cafe-100">5.3K+ Followers & Loved</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-20 bg-cafe-100/50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div class="grid grid-cols-2 gap-4">
+            <div class="space-y-4">
+              <img
+                src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80"
+                alt="Cafe ambiance"
+                class="rounded-3xl shadow-md object-cover h-64 w-full"
+              />
+              <img
+                src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80"
+                alt="Diner food"
+                class="rounded-3xl shadow-md object-cover h-40 w-full"
+              />
+            </div>
+            <div class="space-y-4 pt-8">
+              <img
+                src="https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=600&q=80"
+                alt="Milktea and coffee"
+                class="rounded-3xl shadow-md object-cover h-40 w-full"
+              />
+              <img
+                src="https://images.unsplash.com/photo-1559925393-8be0ec4767c8?auto=format&fit=crop&w=600&q=80"
+                alt="Cozy seating"
+                class="rounded-3xl shadow-md object-cover h-64 w-full"
+              />
+            </div>
+          </div>
+          <div>
+            <span
+              class="text-xs font-bold tracking-widest text-cafe-darkaccent uppercase bg-cafe-200/60 px-3 py-1 rounded-full"
+              >About Cafe Uno</span
+            >
+            <h2
+              class="text-3xl sm:text-4xl font-serif font-bold text-cafe-900 mt-4 mb-6 leading-tight"
+            >
+              Your Go-To Spot for Good Food & Great Conversations
+            </h2>
+            <p class="text-cafe-800/80 leading-relaxed mb-6 font-light">
+              Located right along Fruto Santos Avenue, Brgy. Zapote, Las Piñas,
+              Cafe Uno combines the best of all worlds. Whether you are craving
+              a rich artisan espresso, a creamy sweet milktea fix, or a full
+              comforting diner meal after a long day, our doors are open for
+              you.
+            </p>
+            <div class="grid grid-cols-2 gap-6 pt-4 border-t border-cafe-200">
+              <div>
+                <h3 class="text-2xl font-bold font-serif text-cafe-900">
+                  5.3K+
+                </h3>
+                <p class="text-xs text-cafe-800/70 font-medium">
+                  Loyal Community Followers
+                </p>
+              </div>
+              <div>
+                <h3 class="text-2xl font-bold font-serif text-cafe-900">
+                  100%
+                </h3>
+                <p class="text-xs text-cafe-800/70 font-medium">
+                  Fresh Ingredients & Quality
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Menu Section -->
+    <section id="menu" class="py-20 bg-cafe-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-2xl mx-auto mb-12">
+          <span
+            class="text-xs font-bold tracking-widest text-cafe-darkaccent uppercase bg-cafe-100 px-3 py-1 rounded-full"
+            >Our Offerings</span
+          >
+          <h2
+            class="text-3xl sm:text-4xl font-serif font-bold text-cafe-900 mt-3 mb-4"
+          >
+            Discover the Menu
+          </h2>
+          <p class="text-cafe-800/70 text-sm font-light">
+            Handcrafted beverages, rich coffees, and delicious diner meals
+            prepared fresh for you.
+          </p>
+        </div>
+
+        <!-- Category Filter Buttons -->
+        <div
+          class="flex flex-wrap justify-center gap-2 mb-12"
+          id="menu-filters"
+        >
+          <button
+            onclick="filterMenu('all')"
+            class="menu-btn px-6 py-2.5 rounded-full text-xs font-semibold bg-cafe-900 text-white transition-all shadow-sm"
+            data-category="all"
+          >
+            All Items
+          </button>
+          <button
+            onclick="filterMenu('coffee')"
+            class="menu-btn px-6 py-2.5 rounded-full text-xs font-semibold bg-cafe-200/80 text-cafe-900 hover:bg-cafe-900 hover:text-white transition-all"
+            data-category="coffee"
+          >
+            ☕ Coffee
+          </button>
+          <button
+            onclick="filterMenu('milktea')"
+            class="menu-btn px-6 py-2.5 rounded-full text-xs font-semibold bg-cafe-200/80 text-cafe-900 hover:bg-cafe-900 hover:text-white transition-all"
+            data-category="milktea"
+          >
+            🧋 Milktea
+          </button>
+          <button
+            onclick="filterMenu('diner')"
+            class="menu-btn px-6 py-2.5 rounded-full text-xs font-semibold bg-cafe-200/80 text-cafe-900 hover:bg-cafe-900 hover:text-white transition-all"
+            data-category="diner"
+          >
+            🍔 Diner Meals
+          </button>
+        </div>
+
+        <!-- Menu Grid -->
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          id="menu-grid"
+        >
+          <div
+            class="menu-item bg-white rounded-3xl p-6 shadow-sm border border-cafe-200 flex flex-col justify-between"
+            data-category="coffee"
+          >
+            <div>
+              <div class="h-48 rounded-2xl overflow-hidden mb-4 bg-cafe-100">
+                <img
+                  src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=500&q=80"
+                  alt="Spanish Latte"
+                  class="w-full h-full object-cover"
+                />
+              </div>
+              <div class="flex justify-between items-start mb-2">
+                <h3 class="font-serif font-bold text-lg text-cafe-900">
+                  Signature Spanish Latte
+                </h3>
+                <span class="text-cafe-darkaccent font-bold text-sm">₱140</span>
+              </div>
+              <p class="text-xs text-cafe-800/70 font-light mb-4">
+                Rich espresso blended with fresh milk and a touch of condensed
+                sweetness.
+              </p>
+            </div>
+            <span
+              class="inline-block bg-cafe-100 text-cafe-darkaccent text-[10px] font-semibold px-2.5 py-1 rounded-md w-max"
+              >Coffee</span
+            >
+          </div>
+
+          <div
+            class="menu-item bg-white rounded-3xl p-6 shadow-sm border border-cafe-200 flex flex-col justify-between"
+            data-category="milktea"
+          >
+            <div>
+              <div class="h-48 rounded-2xl overflow-hidden mb-4 bg-cafe-100">
+                <img
+                  src="https://images.unsplash.com/photo-1558857563-b371033873b8?auto=format&fit=crop&w=500&q=80"
+                  alt="Okinawa Milktea"
+                  class="w-full h-full object-cover"
+                />
+              </div>
+              <div class="flex justify-between items-start mb-2">
+                <h3 class="font-serif font-bold text-lg text-cafe-900">
+                  Okinawa Roasted Milktea
+                </h3>
+                <span class="text-cafe-darkaccent font-bold text-sm">₱120</span>
+              </div>
+              <p class="text-xs text-cafe-800/70 font-light mb-4">
+                Deep roasted brown sugar flavor with premium black tea and chewy
+                pearls.
+              </p>
+            </div>
+            <span
+              class="inline-block bg-cafe-100 text-cafe-darkaccent text-[10px] font-semibold px-2.5 py-1 rounded-md w-max"
+              >Milktea</span
+            >
+          </div>
+
+          <div
+            class="menu-item bg-white rounded-3xl p-6 shadow-sm border border-cafe-200 flex flex-col justify-between"
+            data-category="diner"
+          >
+            <div>
+              <div class="h-48 rounded-2xl overflow-hidden mb-4 bg-cafe-100">
+                <img
+                  src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=500&q=80"
+                  alt="Cheeseburger"
+                  class="w-full h-full object-cover"
+                />
+              </div>
+              <div class="flex justify-between items-start mb-2">
+                <h3 class="font-serif font-bold text-lg text-cafe-900">
+                  Uno Classic Cheeseburger
+                </h3>
+                <span class="text-cafe-darkaccent font-bold text-sm">₱180</span>
+              </div>
+              <p class="text-xs text-cafe-800/70 font-light mb-4">
+                Juicy beef patty, melted cheddar cheese, crisp lettuce, and
+                secret diner sauce.
+              </p>
+            </div>
+            <span
+              class="inline-block bg-cafe-100 text-cafe-darkaccent text-[10px] font-semibold px-2.5 py-1 rounded-md w-max"
+              >Diner Meal</span
+            >
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Reservation Section with Validation Rules -->
+    <section id="reservation" class="py-20 bg-cafe-100/50">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div
+          class="bg-white rounded-3xl shadow-xl border border-cafe-200 p-8 sm:p-12"
+        >
+          <div class="text-center max-w-xl mx-auto mb-10">
+            <span
+              class="text-xs font-bold tracking-widest text-cafe-darkaccent uppercase bg-cafe-100 px-3 py-1 rounded-full"
+              >Book Your Table</span
+            >
+            <h2 class="text-3xl font-serif font-bold text-cafe-900 mt-3 mb-2">
+              Table Reservations
+            </h2>
+            <p class="text-cafe-800/70 text-xs sm:text-sm font-light">
+              Open Hours: Mon–Thu (10AM–11PM) | Fri–Sat (10AM–12MN) | Sun
+              (11AM–10PM)
+            </p>
+          </div>
+
+          <form
+            id="reservation-form"
+            onsubmit="handleReservation(event)"
+            class="space-y-6"
+          >
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div>
+                <label
+                  class="block text-xs font-semibold uppercase tracking-wider text-cafe-800 mb-2"
+                  >Full Name (Letters Only, Max 50 chars)</label
+                >
+                <input
+                  type="text"
+                  id="res-name"
+                  required
+                  maxlength="50"
+                  oninput="validateNameInput(this)"
+                  class="w-full bg-cafe-50 border border-cafe-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cafe-accent"
+                  placeholder="Juan Dela Cruz"
+                />
+              </div>
+              <div>
+                <label
+                  class="block text-xs font-semibold uppercase tracking-wider text-cafe-800 mb-2"
+                  >Contact Number (Must start with 09, 11 digits)</label
+                >
+                <input
+                  type="tel"
+                  id="res-phone"
+                  required
+                  maxlength="11"
+                  oninput="validatePhoneInput(this)"
+                  class="w-full bg-cafe-50 border border-cafe-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cafe-accent"
+                  placeholder="09123456789"
+                />
+                <p
+                  id="phone-error"
+                  class="text-[10px] text-rose-600 mt-1 hidden"
+                >
+                  Phone number must start with 09 and be exactly 11 digits.
+                </p>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <div>
+                <label
+                  class="block text-xs font-semibold uppercase tracking-wider text-cafe-800 mb-2"
+                  >Date (No Past Dates)</label
+                >
+                <input
+                  type="date"
+                  id="res-date"
+                  required
+                  onchange="updateTimeConstraints()"
+                  class="w-full bg-cafe-50 border border-cafe-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cafe-accent"
+                />
+              </div>
+              <div>
+                <label
+                  class="block text-xs font-semibold uppercase tracking-wider text-cafe-800 mb-2"
+                  >Time (Within Open Hours)</label
+                >
+                <input
+                  type="time"
+                  id="res-time"
+                  required
+                  class="w-full bg-cafe-50 border border-cafe-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cafe-accent"
+                />
+                <p
+                  id="time-error"
+                  class="text-[10px] text-rose-600 mt-1 hidden"
+                >
+                  Selected time is outside operating hours for this day.
+                </p>
+              </div>
+              <div>
+                <label
+                  class="block text-xs font-semibold uppercase tracking-wider text-cafe-800 mb-2"
+                  >Number of Guests</label
+                >
+                <select
+                  class="w-full bg-cafe-50 border border-cafe-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cafe-accent"
+                >
+                  <option>1 - 2 Persons</option>
+                  <option>3 - 4 Persons</option>
+                  <option>5 - 8 Persons</option>
+                  <option>Large Group (8+)</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label
+                class="block text-xs font-semibold uppercase tracking-wider text-cafe-800 mb-2"
+                >Special Requests or Notes (Optional)</label
+              >
+              <textarea
+                rows="3"
+                maxlength="200"
+                class="w-full bg-cafe-50 border border-cafe-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cafe-accent"
+                placeholder="Al fresco seating preferred..."
+              ></textarea>
+            </div>
+
+            <button
+              type="submit"
+              class="w-full bg-cafe-accent hover:bg-cafe-darkaccent text-cafe-900 font-bold py-4 rounded-xl text-sm transition-all shadow-md"
+            >
+              Confirm Reservation Request
+            </button>
+          </form>
+
+          <div
+            id="success-alert"
+            class="hidden mt-6 bg-emerald-50 border border-emerald-200 text-emerald-800 p-4 rounded-xl text-center text-sm font-medium"
+          >
+            🎉 Thank you! Your reservation request has been received. We will
+            call you shortly to confirm.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer / Contact Section with id="contact" -->
+    <footer
+      id="contact"
+      class="bg-cafe-900 text-white pt-16 pb-12 border-t border-cafe-800"
+    >
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div
+          class="grid grid-cols-1 md:grid-cols-3 gap-12 pb-12 border-b border-cafe-800"
+        >
+          <!-- Col 1 -->
+          <div>
+            <div class="flex items-center gap-3 mb-4">
+              <div
+                class="w-10 h-10 rounded-full bg-cafe-accent flex items-center justify-center text-cafe-900 font-bold"
+              >
+                <i class="fa-solid fa-mug-hot"></i>
+              </div>
+              <span class="text-xl font-bold font-serif text-white"
+                >Cafe Uno</span
+              >
+            </div>
+            <p class="text-xs text-cafe-200/80 leading-relaxed font-light mb-6">
+              Milktea + Coffee + Diner located along Fruto Santos Avenue, Brgy.
+              Zapote, Las Piñas. Serving community warmth in every cup and meal.
+            </p>
+            <div class="flex gap-3">
+              <a
+                href="https://facebook.com"
+                target="_blank"
+                class="w-10 h-10 rounded-xl bg-cafe-800 flex items-center justify-center text-cafe-accent hover:bg-cafe-accent hover:text-cafe-900 transition-all"
+              >
+                <i class="fa-brands fa-facebook-f"></i>
+              </a>
+              <a
+                href="https://instagram.com"
+                target="_blank"
+                class="w-10 h-10 rounded-xl bg-cafe-800 flex items-center justify-center text-cafe-accent hover:bg-cafe-accent hover:text-cafe-900 transition-all"
+              >
+                <i class="fa-brands fa-instagram"></i>
+              </a>
+              <a
+                href="mailto:cafeuno@yahoo.com"
+                class="w-10 h-10 rounded-xl bg-cafe-800 flex items-center justify-center text-cafe-accent hover:bg-cafe-accent hover:text-cafe-900 transition-all"
+              >
+                <i class="fa-solid fa-envelope"></i>
+              </a>
+            </div>
+          </div>
+
+          <!-- Col 2 -->
+          <div>
+            <h3
+              class="text-sm font-semibold uppercase tracking-wider text-cafe-accent mb-4"
+            >
+              Contact Info
+            </h3>
+            <ul class="space-y-3 text-xs text-cafe-200/80 font-light">
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-location-dot text-cafe-accent mt-0.5"></i>
+                <span
+                  >Fruto Santos Avenue, Brgy. Zapote, Las Piñas, Philippines,
+                  1740</span
+                >
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fa-solid fa-phone text-cafe-accent"></i>
+                <a href="tel:09164360363" class="hover:text-white"
+                  >0916 436 0363</a
+                >
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fa-solid fa-envelope text-cafe-accent"></i>
+                <a href="mailto:cafeuno@yahoo.com" class="hover:text-white"
+                  >cafeuno@yahoo.com</a
+                >
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fa-solid fa-at text-cafe-accent"></i>
+                <span>Instagram: @cafeuno_laspinas</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Col 3 -->
+          <div>
+            <h3
+              class="text-sm font-semibold uppercase tracking-wider text-cafe-accent mb-4"
+            >
+              Operating Hours
+            </h3>
+            <ul class="space-y-2 text-xs text-cafe-200/80 font-light">
+              <li class="flex justify-between py-1 border-b border-cafe-800">
+                <span>Monday – Thursday:</span>
+                <span class="font-medium text-white">10:00 AM – 11:00 PM</span>
+              </li>
+              <li class="flex justify-between py-1 border-b border-cafe-800">
+                <span>Friday – Saturday:</span>
+                <span class="font-medium text-white">10:00 AM – 12:00 MN</span>
+              </li>
+              <li class="flex justify-between py-1">
+                <span>Sunday:</span>
+                <span class="font-medium text-white">11:00 AM – 10:00 PM</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div
+          class="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-cafe-200/60 font-light"
+        >
+          <p>
+            &copy; 2026 Cafe Uno Milktea + Coffee + Diner. All rights reserved.
+          </p>
+          <p class="mt-2 sm:mt-0">
+            Custom Built Web Solution for Local Businesses
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- JavaScript Validation Logic -->
+    <script>
+      // Set minimum date to today so past dates cannot be selected
+      window.addEventListener("DOMContentLoaded", () => {
+        const todayStr = new Date().toISOString().split("T")[0];
+        document.getElementById("res-date").setAttribute("min", todayStr);
+      });
+
+      // Full Name restriction: only allow letters and spaces
+      function validateNameInput(input) {
+        input.value = input.value.replace(/[^A-Za-zÑñ\s]/g, "");
+      }
+
+      // Phone number restriction: digits only, must start with 09, max 11 digits
+      function validatePhoneInput(input) {
+        input.value = input.value.replace(/\D/g, ""); // Remove non-digits
+        const errorEl = document.getElementById("phone-error");
+
+        if (input.value.length > 0 && !input.value.startsWith("09")) {
+          errorEl.textContent = "Phone number must start with 09.";
+          errorEl.classList.remove("hidden");
+        } else if (input.value.length > 0 && input.value.length < 11) {
+          errorEl.textContent = "Phone number must be exactly 11 digits.";
+          errorEl.classList.remove("hidden");
+        } else {
+          errorEl.classList.add("hidden");
+        }
+      }
+
+      // Update time constraints based on day of week
+      function updateTimeConstraints() {
+        const dateVal = document.getElementById("res-date").value;
+        const timeInput = document.getElementById("res-time");
+        if (!dateVal) return;
+
+        const dateObj = new Date(dateVal);
+        const dayOfWeek = dateObj.getDay();
+
+        let minTime = "10:00";
+        let maxTime = "23:00";
+
+        if (dayOfWeek === 0) {
+          // Sunday
+          minTime = "11:00";
+          maxTime = "22:00";
+        } else if (dayOfWeek === 5 || dayOfWeek === 6) {
+          // Friday, Saturday
+          minTime = "10:00";
+          maxTime = "00:00";
+        } else {
+          // Monday - Thursday
+          minTime = "10:00";
+          maxTime = "23:00";
+        }
+
+        timeInput.setAttribute("min", minTime);
+        timeInput.setAttribute("max", maxTime);
+      }
+
+      // Handle Form Submission with checks
+      function handleReservation(e) {
+        e.preventDefault();
+
+        const phoneVal = document.getElementById("res-phone").value;
+        if (phoneVal.length !== 11 || !phoneVal.startsWith("09")) {
+          document.getElementById("phone-error").textContent =
+            "Please enter a valid 11-digit Philippine mobile number starting with 09.";
+          document.getElementById("phone-error").classList.remove("hidden");
+          document.getElementById("res-phone").focus();
+          return;
+        }
+
+        const dateVal = document.getElementById("res-date").value;
+        const timeVal = document.getElementById("res-time").value;
+        const dateObj = new Date(dateVal);
+        const dayOfWeek = dateObj.getDay();
+
+        let minHour = dayOfWeek === 0 ? 11 : 10;
+        let maxHour = 23;
+        if (dayOfWeek === 5 || dayOfWeek === 6) maxHour = 24;
+        if (dayOfWeek === 0) maxHour = 22;
+
+        const [hours, minutes] = timeVal.split(":").map(Number);
+
+        if (
+          hours < minHour ||
+          (dayOfWeek !== 5 && dayOfWeek !== 6 && hours > maxHour) ||
+          (dayOfWeek === 0 && hours > 22)
+        ) {
+          document.getElementById("time-error").classList.remove("hidden");
+          document.getElementById("res-time").focus();
+          return;
+        } else {
+          document.getElementById("time-error").classList.add("hidden");
+        }
+
+        const alertBox = document.getElementById("success-alert");
+        alertBox.classList.remove("hidden");
+        e.target.reset();
+        setTimeout(() => {
+          alertBox.scrollIntoView({ behavior: "smooth" });
+        }, 100);
+      }
+
+      // Menu filter helper
+      function filterMenu(category) {
+        const items = document.querySelectorAll(".menu-item");
+        const buttons = document.querySelectorAll("#menu-filters button");
+
+        buttons.forEach((btn) => {
+          if (btn.getAttribute("data-category") === category) {
+            btn.classList.remove("bg-cafe-200/80", "text-cafe-900");
+            btn.classList.add("bg-cafe-900", "text-white");
+          } else {
+            btn.classList.remove("bg-cafe-900", "text-white");
+            btn.classList.add("bg-cafe-200/80", "text-cafe-900");
+          }
+        });
+
+        items.forEach((item) => {
+          if (
+            category === "all" ||
+            item.getAttribute("data-category") === category
+          ) {
+            item.style.display = "flex";
+          } else {
+            item.style.display = "none";
+          }
+        });
+      }
+    </script>
+
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("/sw.js")
+            .then((reg) =>
+              console.log(
+                "Service Worker registered! Offline mode is active.",
+                reg,
+              ),
+            )
+            .catch((err) =>
+              console.log("Service Worker registration failed:", err),
+            );
+        });
+      }
+    </script>
+  </body>
+</html>
